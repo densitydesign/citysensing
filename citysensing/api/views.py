@@ -17,9 +17,9 @@ import requests
 def api_generic(request, api_name):
 
     url = settings.BASE_URL + "/" + api_name
-    data = request.POST.dict()
+    data = request.body
     headers = {'content-type':'application/json', 'accept':'text/plain'}
-    r = requests.post(url, data=json.dumps(data), headers=headers)
+    r = requests.post(url, data=data, headers=headers)
     
     response = json.loads(r.text)
 

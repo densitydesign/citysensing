@@ -41,10 +41,16 @@ angular.module('citySensing')
     "start": 1365568200000,
     "end": 1366923600000,
     "cells": [
-        9080
+        9080,
+        4356,
+        4763,
+        7835,
+        6543,
+        2098,
+        456
     ]
   }
-
+  
   mapService.getMapData(request).then(
     function(data){
         console.log(data)
