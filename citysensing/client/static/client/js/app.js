@@ -9,6 +9,10 @@ angular.module('citySensing', ['ngResource','ui.bootstrap','restangular']).
     $routeProvider.otherwise({redirectTo: '/', templateUrl: 'views/main.html', controller: 'main'});
   }]).
   config(function(RestangularProvider){
-	RestangularProvider.setBaseUrl('http://localhost:8000/api')
-  })
+	RestangularProvider.setBaseUrl('/api')
+  }).
+  config(function($interpolateProvider) {
+  	$interpolateProvider.startSymbol('{[{');
+  	$interpolateProvider.endSymbol('}]}');
+  });
 
