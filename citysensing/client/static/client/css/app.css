@@ -46,7 +46,7 @@ html {
 }
 
 .navbar-masthead .navbar-inner {
-  padding: 15px 30px;
+  padding: 10px 30px;
 }
 
 .navbar-masthead .nav > li > a.brand{
@@ -75,4 +75,16 @@ legend {
   color: #333;
   border: none;
   border-bottom: none;
+}
+
+
+.dropdown-menu {
+  padding: 6px 0;
+}
+
+
+/* Map */
+
+.leaflet-control-zoom, .leaflet-control-layers {
+  border: none;
 }

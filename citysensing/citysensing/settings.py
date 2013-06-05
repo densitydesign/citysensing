@@ -123,9 +123,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admindocs',
     'api',
     'client'
 )
@@ -158,3 +158,5 @@ LOGGING = {
         },
     }
 }
+
+LOGIN_REDIRECT_URL = "/"

@@ -5,13 +5,28 @@ angular.module('citySensing')
     return {
       restrict: 'E',
       replace: false,
-      template:'<div id="viz"></div>',
       link: function postLink(scope, element, attrs) {
 
-        var map = citysensing.map()
+        function update() {
+          if (!scope.cells) return;
 
-        d3.select(element[0])
-          .call(map)
+          var map = citysensing.map()
+            .grid(scope.grid)
+
+          d3.select(element[0]).selectAll("svg").remove();
+          d3.select(element[0])
+            .append("svg")
+            .datum(scope.cells)
+            .call(map);
+        }
+
+        scope.$watch('cells',function(){
+          update();
+        })
+
+        scope.$watch('grid',function(){
+          update();
+        })
 
       }
     };

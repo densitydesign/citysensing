@@ -6,8 +6,9 @@ angular.module('citySensing')
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/json';
 })
 
+
 angular.module('citySensing')
-.factory('mapService', function($http) {
+.factory('mapService', function($http, $q) {
   
   return {
     
@@ -22,7 +23,20 @@ angular.module('citySensing')
             return response.data.error;
         })
         return promise;
+    },
+
+    getGrid : function(gridUrl){
+        var deferred = $q.defer();
+        $http.get(gridUrl).success(function(data){
+            deferred.resolve(data);
+        }).error(function(){
+            deferred.reject("An error occured while fetching grid");
+        });
+        
+        return deferred.promise;
     }
+
+
     
     
   }

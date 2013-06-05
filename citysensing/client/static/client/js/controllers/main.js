@@ -50,17 +50,28 @@ angular.module('citySensing')
         456
     ]
   }
-  
+
   mapService.getMapData(request).then(
     function(data){
-        console.log(data)
+        $scope.cells = data.cells;
     }, 
     function(error){
       console.error("error getting map data", error);
     }
   );
 
-  $scope.grid = "static/client/grid/grid_t.json";
+  $scope.gridUrl = "static/client/grid/grid_t.json";
+  mapService.getGrid($scope.gridUrl).then(
+          function(data){
+              $scope.grid = data;
+              console.log($scope.grid)
+          }, 
+          function(error){
+              console.error("error getting specs list", error);
+          }
+      );
+
+
   $scope.start = 30;
   $scope.end = 100;
 

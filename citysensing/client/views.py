@@ -7,6 +7,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 
+@login_required(login_url="/login/")
 def client_index(request):
     c = RequestContext(request)
     return render_to_response("client/index.html", c)
