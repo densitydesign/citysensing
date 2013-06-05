@@ -5,6 +5,10 @@ angular.module('citySensing')
     return {
       restrict: 'E',
       replace: false,
+      scope: {
+        cells : '=',
+        grid : '='
+      },
       link: function postLink(scope, element, attrs) {
 
         function update() {
