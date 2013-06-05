@@ -8,7 +8,7 @@ angular.module('citySensing')
       link: function postLink(scope, element, attrs) {
 
         function update() {
-          if (!scope.cells) return;
+          if (!scope.cells || !scope.grid) return;
 
           var map = citysensing.map()
             .grid(scope.grid)
