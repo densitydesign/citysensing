@@ -20,7 +20,7 @@ def api_generic(request, api_name):
     data = request.body
     headers = {'content-type':'application/json', 'accept':'text/plain'}
     r = requests.post(url, data=data, headers=headers)
-    
+    print r.text
     response = json.loads(r.text)
 
     return response
