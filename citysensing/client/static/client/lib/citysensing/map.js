@@ -4,54 +4,58 @@
 
   citysensing.map = function(){
 
+    var grid,
+        zoom = 14,
+        minZoom = 12,
+        maxZoom = 17;
+
     function map(selection){
       selection.each(function(data){
-        console.log(data);
+
+        var l = new L.StamenTileLayer("toner-lite"),
+            m = new L.Map("map", {
+            center: new L.LatLng(45.4640, 9.1916),
+            zoom: zoom,
+            minZoom : minZoom,
+            maxZoom : maxZoom
+        });
+
+        var grid_geojson = topojson.feature(grid, grid.objects.grid);
+
+        m.addLayer(l);
+
+
       })
-    }   
+    }
+
+    map.grid = function(x){
+      if (!arguments.length) return grid;
+      grid = x;
+      return map;
+    }
+
+    map.minZoom = function(x){
+      if (!arguments.length) return minZoom;
+      minZoom = x;
+      return map;
+    }
+
+    map.maxZoom = function(x){
+      if (!arguments.length) return maxZoom;
+      maxZoom = x;
+      return map;
+    }
+
+    map.zoom = function(x){
+      if (!arguments.length) return zoom;
+      zoom = x;
+      return map;
+    }
 
     return map;
   }
 
-  /* Adding csrf_token to each query */
 
-  $(document).ajaxSend(function(event, xhr, settings) {
-      function getCookie(name) {
-          var cookieValue = null;
-          if (document.cookie && document.cookie != '') {
-              var cookies = document.cookie.split(';');
-              for (var i = 0; i < cookies.length; i++) {
-                  var cookie = jQuery.trim(cookies[i]);
-                  // Does this cookie string begin with the name we want?
-                  if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                      break;
-                  }
-              }
-          }
-          return cookieValue;
-      }
-      function sameOrigin(url) {
-        console.log("suca")
-          // url could be relative or scheme relative or absolute
-          var host = document.location.host; // host + port
-          var protocol = document.location.protocol;
-          var sr_origin = '//' + host;
-          var origin = protocol + sr_origin;
-          // Allow absolute or scheme relative URLs to same origin
-          return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-              (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-              // or any other URL that isn't scheme relative or absolute i.e relative.
-              !(/^(\/\/|http:|https:).*/.test(url));
-      }
-      function safeMethod(method) {
-          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-      }
-
-      if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
-          xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-      }
-  });
 
 })();
 
