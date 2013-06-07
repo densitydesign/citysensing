@@ -17,6 +17,8 @@ angular.module('citySensing')
           var map = citysensing.map()
             .grid(scope.grid)
 
+          //console.log(scope.grid,'sticazzi')
+
           d3.select(element[0]).selectAll("svg").remove();
           d3.select(element[0])
             .append("svg")
