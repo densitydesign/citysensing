@@ -1,6 +1,3 @@
-
-#!/var/www/sketch.densitydesign.org/citysensing/env/bin/python
-
 """
 WSGI config for citysensing project.
 
@@ -16,17 +13,7 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import os, sys, site
-
-root_dir = "/var/www/citysensing.densitydesign.org/citysensing/env"
-packages_dir = os.path.join(root_dir, "lib/python2.6/site-packages")
-
-site.addsitedir(packages_dir)
-
-sys.path.append(root_dir)
-sys.path.insert(0,packages_dir)
-
-sys.path.append("/var/www/citysensing.densitydesign.org/citysensing/citysensing")
+import os
 
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks
 # if running multiple sites in the same mod_wsgi process. To fix this, use

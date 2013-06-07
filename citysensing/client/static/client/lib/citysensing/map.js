@@ -94,11 +94,7 @@
 
           feature.exit().remove()
 
-          feature
-            .attr("fill",function(d){ 
-                //return sentiment(Math.round(Math.random()));
-                return sentiment(d.properties.social_sentiment);
-            })
+          feature  
             .attr("transform", function(d) {
               var centroid = path.centroid(d),
                 x = centroid[0],
