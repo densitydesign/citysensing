@@ -80,7 +80,7 @@ angular.module('citySensing')
   $scope.cells = [
         {
             "id": 1,
-            "mobily_activity": 16,
+            "mobily_activity": 17,
             "mobily_anomaly": 56,
             "social_activity": 90,
             "social_sentiment": 61
