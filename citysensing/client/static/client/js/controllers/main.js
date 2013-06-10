@@ -3,43 +3,16 @@
 angular.module('citySensing')
   .controller('main', function($scope, $http, mapService) {
 
-/*  	var options = Restangular.all('options');
-
-  	options.getList().then(function(options){
-      console.log(options)
-    })
-
-    $scope.time = {
-      start = "asdasd",
-      end = "sadasdas"
-    }
-
-    
-    $scope.$watch('time', function(){
-      cells.
-    })
-  	
-  	 
-    /*
-    $http.jsonp("http://localhost:8000/api/options?callback=JSON_CALLBACK")
-        .success(function(data){
-        	console.log(data)
-          $scope.authors = data.result.options;
-        })
-        .error(function(data,status){
-        	console.log(data,status)
-        });
-*/
-  
-
-  $scope.$watch('start',function(){
-    // fare tutte quelle cose che devono acccadere quando start cambia...
-
-  })
+  // base grid for the map
+  $scope.gridUrl = "static/client/grid/grid_t.json";
+  // default initial start value
+  $scope.start = 1365568200000;
+  // default initial end value
+  $scope.end = 1366923600000;
 
   var request = {
-    "start": 1365568200000,
-    "end": 1366923600000,
+    "start": $scope.start,
+    "end": $scope.end,
     "cells": [
         9080,
         4356,
@@ -53,28 +26,29 @@ angular.module('citySensing')
 
   mapService.getMapData(request).then(
     function(data){
-        $scope.cells = data.cells;
+      $scope.cells = data.cells;
     }, 
     function(error){
-      console.error("error getting map data", error);
+      $scope.error = error;
+      console.log($scope.error)
     }
   );
 
-  $scope.gridUrl = "static/client/grid/grid_t.json";
   mapService.getGrid($scope.gridUrl).then(
-          function(data){
-              $scope.grid = data;
-              console.log($scope.grid)
-          }, 
-          function(error){
-              console.error("error getting specs list", error);
-          }
-      );
+    function(data){
+      $scope.grid = data;
+      console.log($scope.grid)
+    }, 
+    function(error){
+      $scope.error = error;
+    }
+  );
 
-
-  $scope.start = 30;
-  $scope.end = 100;
-
+  // dismiss errors
+  $scope.dismiss = function(){
+    $scope.error = false;
+  }
+  
 
 
   })

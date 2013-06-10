@@ -11,11 +11,11 @@ angular.module('citySensing')
       },
       link: function postLink(scope, element, attrs) {
 
-        function update() {
-          if (!scope.cells || !scope.grid) return;
+        var map = citysensing.map();
 
-          var map = citysensing.map()
-            .grid(scope.grid)
+        function update() {
+
+          if (!scope.cells || !scope.grid) return;
 
           d3.select(element[0]).selectAll("svg").remove();
           d3.select(element[0])
@@ -29,6 +29,7 @@ angular.module('citySensing')
         })
 
         scope.$watch('grid',function(){
+          map.grid(scope.grid)
           update();
         })
 

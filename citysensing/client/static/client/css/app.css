@@ -82,6 +82,11 @@ legend {
   padding: 6px 0;
 }
 
+#alert {
+  position: fixed;
+  top: 0px;
+}
+
 
 /* Map */
 

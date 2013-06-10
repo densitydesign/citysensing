@@ -14,15 +14,16 @@ angular.module('citySensing')
     
     getMapData : function(request){
         
-    	var promise = $http.post("/api/map/", request)
-    	.then(function(response){
-            return response.data.result;
+        var deferred = $q.defer();
+        $http.post("/api/map/", request)
+        .then(function(data){
+            deferred.resolve(data);
         },
-        function(response){
-        	console.log("error", response)
-            return response.data.error;
-        })
-        return promise;
+        function(){
+            deferred.reject("An error occured while fetching map data");
+        });
+        
+        return deferred.promise;
     },
 
     getGrid : function(gridUrl){
@@ -35,8 +36,6 @@ angular.module('citySensing')
         
         return deferred.promise;
     }
-
-
     
     
   }
