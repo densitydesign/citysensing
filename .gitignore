@@ -1,2 +1,5 @@
 env/*
 citysensing/citysensing/settings.py
+citysensing/citysensing/wsgi.py
+*.pyc
+.DS_Store
