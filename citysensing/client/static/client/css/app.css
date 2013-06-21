@@ -55,6 +55,11 @@ html {
   font-family: "Open Sans";
 }
 
+.navbar-masthead .nav > li > a {
+  color: rgb(46, 185, 197);
+  text-shadow: none;
+}
+
 .navbar-text {
   color: #999;
 }
@@ -92,4 +97,34 @@ legend {
 
 .leaflet-control-zoom, .leaflet-control-layers {
   border: none;
+}
+
+
+/* Timeline */
+
+.timeline {
+  width: 100%;
+}
+
+.axis line, .axis path {
+  stroke: black;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-size: 11px;
+}
+
+rect.bar {
+  shape-rendering: crispEdges;
+  fill: #ddd;
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
 }

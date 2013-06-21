@@ -1,12 +1,12 @@
 (function(){
 
-  var citysensing = window.citysensing = {};
+  var citysensing = window.citysensing || (window.citysensing = {});
 
   citysensing.map = function(){
 
     var grid,
         zoom = 14,
-        minZoom = 12,
+        minZoom = 11,
         maxZoom = 17;
 
     function map(selection){
