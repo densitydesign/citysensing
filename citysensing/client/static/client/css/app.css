@@ -11,7 +11,7 @@ html {
   -webkit-box-shadow: inset 3px 0px 3px -1px #ddd;
   box-shadow: inset 3px 0px 3px -1px #ddd;
   */
-  min-height: 600px;
+  max-height: 600px;
 }
 
 #panel {

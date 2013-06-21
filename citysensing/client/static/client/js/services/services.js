@@ -17,7 +17,7 @@ angular.module('citySensing')
         var deferred = $q.defer();
         $http.post("/api/map/", request)
         .then(function(data){
-            deferred.resolve(data);
+            deferred.resolve(data.data.result);
         },
         function(){
             deferred.reject("An error occured while fetching map data");

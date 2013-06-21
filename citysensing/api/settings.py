@@ -9,4 +9,4 @@ SERVER_PASSWORD = getattr(settings, 'SERVER_PASSWORD', 'root')
 SERVER_DB = getattr(settings, 'SERVER_DB', 'citysensing')
 
 #	api rest base url
-BASE_URL = "http://156.54.107.76:8003"
+BASE_URL = "http://80.18.73.38:8175/0.3"
