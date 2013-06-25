@@ -67,20 +67,30 @@
           d3.max(lines, function(c) { return d3.max(c.values, function(v) { return v.value; }); })
         ]);
 
+        selection.selectAll("g.axis").remove();
         selection.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + h + ")")
             .call(xAxis);
 
-        var lineo = selection.selectAll(".activity")
-            .data(lines)
-          .enter().append("g")
-            .attr("class", "activity");
+        var activity = selection.selectAll(".activity")
+          .data(lines)
 
-        lineo.append("path")
+        activity.enter().append("g")
+          .attr("class", "activity");
+
+        var path = activity.selectAll("path")
+          .data(function(d){ return [d];})
+          .style("stroke", function(d) { return color(d.name); });
+
+        path.transition()
+          .attr("d", function(d) { return line(d.values); })
+
+        path.enter().append("path")
             .attr("class", "line")
-            .attr("d", function(d) { return line(d.values); })
-            .style("stroke", function(d) { return color(d.name); });
+            .style("stroke", function(d) { return color(d.name); })
+            .transition()
+              .attr("d", function(d) { return line(d.values); })
 
         if (brushing) {
 
