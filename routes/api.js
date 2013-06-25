@@ -1,7 +1,7 @@
 // initialize our faux database
 var request = require('request'),
-	baseUrl = 'http://80.18.73.38:8175/0.3',
-	//baseUrl = 'http://156.54.107.76:8003/0.3',
+	//baseUrl = 'http://80.18.73.38:8175/0.3',
+	baseUrl = 'http://156.54.107.76:8003/0.3',
 	headers = { 'content-type': 'text/json' };
 
 exports.map = function (req, res) {
