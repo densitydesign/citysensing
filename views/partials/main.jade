@@ -1,0 +1,37 @@
+div#alert.row-fluid
+	div.alert(ng_show="error")
+
+		button.close(type="button", ng-click="dismiss()") &times;
+		strong Error!
+			{{error}}
+
+
+div.row-fluid
+	div.span2
+		div#panel
+			legend Options
+			
+			label Size by
+
+			label.radio
+				input(type="radio", name="tweets", checked) Tweets
+			label.radio
+				input(type="radio", name="tweets") An
+
+			div(side-panel, request="{{request}}")
+
+	div#map.span10
+		//div(map, grid="{{grid}}", request="{{request}}")
+
+div.row-fluid
+	div#timeline.span12.breath
+		legend Timeline
+		//div(timeline-focus, request="{{request}}", error="{{error}}")
+		//div(timeline-context, request="{{request}}", error="{{error}}")
+		div.multiline(multiline-focus, request="{{request}}", error="{{error}}")
+		div.multiline(multiline-context, request="{{request}}", error="{{error}}")
+
+div.row-fluid
+	div#timeline.span12.breath
+		legend Network
+		//div(network, request="{{request}}", error="{{error}}")
