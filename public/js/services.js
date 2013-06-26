@@ -2,7 +2,9 @@
 
 /* Services */
 
-angular.module('citySensing')
+var timelineFocus,
+	sidePanel;
+
 
 angular.module('citySensing.services', [])
 	
@@ -43,44 +45,53 @@ angular.module('citySensing.services', [])
 
 	    getTimelineContext : function(request){
 	        
-	        var deferred = $q.defer();
-	        $http.post("/api/timeline/context", request)
-	        .then(function(response){
-	            deferred.resolve(response.data);
-	        },
-	        function(){
-	            deferred.reject("An error occured while fetching map data");
-	        });
-	        
-	        return deferred.promise;
+	        return $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/timeline/context'
+	        })
 	    },
 
 	    getTimelineFocus : function(request){
 	        
-	        var deferred = $q.defer();
-	        $http.post("/api/timeline/focus", request)
-	        .then(function(response){
-	            deferred.resolve(response.data);
-	        },
-	        function(){
-	            deferred.reject("An error occured while fetching map data");
-	        });
+	    	// aborting previous requests...
+	    	if (timelineFocus && timelineFocus.readyState != 4) {
+	    		timelineFocus.abort();
+	    	}
+
+	        timelineFocus = $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/timeline/focus'
+	        })
+
+	        return timelineFocus;
 	        
-	        return deferred.promise;
 	    },
 
 	    getSidePanel : function(request){
-	        
-	        var deferred = $q.defer();
-	        $http.post("/api/sidepanel", request)
-	        .then(function(response){
-	            deferred.resolve(response.data);
-	        },
-	        function(){
-	            deferred.reject("An error occured while fetching map data");
-	        });
-	        
-	        return deferred.promise;
+
+	        // aborting previous requests...
+	    	if (sidePanel && sidePanel.readyState != 4) {
+	    		sidePanel.abort();
+	    	}
+
+	        sidePanel = $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/sidepanel'
+	        })
+
+	        return sidePanel;
 	    },
 
 	    getConceptNetwork : function(request){

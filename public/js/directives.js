@@ -11,20 +11,20 @@ angular.module('citySensing.directives', [])
       link: function postLink(scope, element, attrs) {
 
         function update(){
-          apiService.getSidePanel(scope.request).then(
-            function(data){
-              // test now
-              scope.callsIn = data.calls_in;
+          apiService.getSidePanel(scope.request)
+          .done(function(data){
+            console.log("SIDEPANEL >", data)
+            scope.callsIn = data.calls_in;
               scope.callsOut = data.calls_out;
-							scope.messagesIn = data.messages_in;
+              scope.messagesIn = data.messages_in;
               scope.messagesOut = data.messages_out;
               scope.dataTraffic = data.data_traffic;
-              scope.hashtags = data.hashtags.slice(0,20)
-            }, 
-            function(error){
-              scope.error = error;
-            }
-          );
+              scope.hashtags = data.hashtags.slice(0,20);
+              scope.$apply();
+          })
+          .fail(function(error){
+            scope.error = error;
+          })
         }
 
       	scope.$watch('request', function(){
@@ -35,96 +35,7 @@ angular.module('citySensing.directives', [])
     };
   }])
 
-  .directive('timelineContext', [ 'apiService', function (apiService) {
-    return {
-      restrict: 'A',
-      replace: false,
-      link: function postLink(scope, element, attrs) {
-
-      	function updateTime(d){
-      		scope.request.start = d[0].getTime();
-          scope.request.end = d[1].getTime();
-          scope.$apply();
-      	}
-
-      	var interval;
-
-        var svg = d3.select(element[0])
-          .append("svg")
-          .attr("width", element.outerWidth())
-          .attr("height", 100)
-
-        var timeline = citysensing.timeline()
-          .width(element.outerWidth())
-          .height(100)
-          .brushing(true)
-          .on("brushed",function(d){
-          	window.clearInterval(interval)
-            interval = setTimeout(function(){ updateTime(d); }, 1000);
-          })
-
-
-        function update(){
-          apiService.getTimelineContext(scope.request).then(
-            function(data){
-
-              svg
-                .datum(data.steps)
-                .call(timeline)
-            }, 
-            function(error){
-              scope.error = error;
-            }
-          );
-        }
-
-      	scope.$watch('request.cells', function(){
-          update();
-      	},true)
-
-      }
-    };
-  }])
-
-	.directive('timelineFocus', [ 'apiService', function (apiService) {
-    return {
-      restrict: 'A',
-      replace: false,
-      link: function postLink(scope, element, attrs) {
-
-        var svg = d3.select(element[0])
-          .append("svg")
-          .attr("width", element.outerWidth())
-          .attr("height", 100)
-
-        var timeline = citysensing.timeline()
-          .width(element.outerWidth())
-          .height(100)
-
-        function update(){
-          apiService.getTimelineFocus(scope.request).then(
-            function(data){
-              // test now
-              console.log(data)
-
-              svg
-                .datum(data.steps)
-                .call(timeline)
-            }, 
-            function(error){
-              scope.error = error;
-            }
-          );
-        }
-
-        scope.$watch('request', function(){
-          update();
-        },true)
-
-      }
-    };
-  }])
-
+  
 	.directive('map', [ 'apiService', function (apiService) {
 		return {
       restrict: 'A',
@@ -215,16 +126,15 @@ angular.module('citySensing.directives', [])
           .height(100)
 
         function update(){
-          apiService.getTimelineFocus(scope.request).then(
-            function(data){
-              svg
-                .datum(data.steps)
-                .call(multiline)
-            }, 
-            function(error){
-              scope.error = error;
-            }
-          );
+          apiService.getTimelineFocus(scope.request)
+          .done(function(data){
+            svg
+              .datum(data.steps)
+              .call(multiline)
+          })
+          .fail(function(error){
+            console.log(error)
+          })
         }
 
         scope.$watch('request', function(){
@@ -261,27 +171,28 @@ angular.module('citySensing.directives', [])
           .width(element.outerWidth())
           .height(100)
           .on("brushed",function(d){
+            /*scope.request.start = d[0].getTime();
+            scope.request.end = d[1].getTime();
+            scope.$apply();*/
           	window.clearInterval(interval)
             interval = setTimeout(function(){ updateTime(d); }, 1000);
           })
 
         function update(){
-          apiService.getTimelineContext(scope.request).then(
-            function(data){
-            	console.log("multiline",data)
-              // test now
-              svg
-                .datum(data.steps)
-                .call(multiline)
-            }, 
-            function(error){
-              scope.error = error;
-            }
-          );
+
+          apiService.getTimelineContext(scope.request)
+          .done(function(data){
+            svg
+              .datum(data.steps)
+              .call(multiline)
+          })
+          .fail(function(error){
+            console.log(error)
+          })
+
         }
 
         scope.$watch('request.cells', function(){
-          //parti con la chiamata api
           update();
         },true)
 
