@@ -11,17 +11,15 @@ div.row-fluid
 		div#panel
 			legend Options
 			
+			label Color by
+				select.show-tick.span12(selectpicker, ng-model="color", ng-options="c.label for c in colorList")
 			label Size by
-
-			label.radio
-				input(type="radio", name="tweets", checked) Tweets
-			label.radio
-				input(type="radio", name="tweets") An
-
+			select.show-tick.span12(selectpicker, ng-model="size", ng-options="c.label for c in sizeList")
+			
 			div(side-panel, request="{{request}}")
 
 	div#map.span10
-		//div(map, grid="{{grid}}", request="{{request}}")
+		div(map, grid="grid", request="request", color="color", size="size")
 
 div.row-fluid
 	div#timeline.span12.breath

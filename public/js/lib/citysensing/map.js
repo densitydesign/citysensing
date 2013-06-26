@@ -5,131 +5,128 @@
   citysensing.map = function(){
 
     var grid,
-        zoom = 14,
+        zoom = 13,
         minZoom = 11,
-        maxZoom = 17;
+        maxZoom = 17,
+        coordinates = [45.4640, 9.1916],
+        l = new L.StamenTileLayer("toner-lite"),
+        m = new L.Map("map", {
+            center: new L.LatLng(coordinates[0], coordinates[1]),
+            zoom: zoom,
+            minZoom : minZoom,
+            maxZoom : maxZoom
+        }),
+        colorRange = ['red','green'],
+        sizeRange = [0.1,1]
+
+
+    m.addLayer(l);
 
     function map(selection){
       selection.each(function(data){
 
-        var l = new L.StamenTileLayer("toner-lite"),
-            m = new L.Map("map", {
-            center: new L.LatLng(45.4640, 9.1916),
-            zoom: zoom,
-            minZoom : minZoom,
-            maxZoom : maxZoom
-        });
+        var collection = topojson.feature(grid, grid.objects.grid),
+            path = d3.geo.path().projection(project),
+            bounds = d3.geo.bounds(collection);
 
-        m.addLayer(l);
+        var colorScale = d3.scale.linear().range(colorRange).domain([-1,1])//.domain([ d3.min(data, color), d3.max(data, color) ]),
+            sizeScale = d3.scale.linear().range(sizeRange).domain([ d3.min(data, size), d3.max(data, size) ])
 
-        var grid_geojson = topojson.feature(grid, grid.objects.grid),
-          path = d3.geo.path().projection(project),
-          svg = d3.select(m.getPanes().overlayPane).append("svg"),
-          g=svg.append("g").attr("class", "leaflet-zoom-hide"),
-          bb = m.getBounds(),
-          bounds = d3.geo.bounds(grid_geojson);
-
-        var max_social_sentiment = d3.max(data, function(d){return d.social_sentiment}),
-          min_social_sentiment = d3.min(data, function(d){return d.social_sentiment}),
-          max_social_activity = d3.max(data, function(d){return d.social_activity}),
-          min_social_activity = d3.min(data, function(d){return d.social_activity}),
-          max_mobily_activity = d3.max(data, function(d){return d.mobily_activity}),
-          min_mobily_activity = d3.min(data, function(d){return d.mobily_activity}),
-          max_mobily_anomaly = d3.max(data, function(d){return d.mobily_anomaly}),
-          min_mobily_anomaly = d3.min(data, function(d){return d.mobily_anomaly});
-
+        // main overlay
+        var svg = d3.select(m.getPanes().overlayPane).selectAll("svg")
+            .data([data])
+            svg.enter().append("svg");
         
-
+        var g = svg.selectAll("g.leaflet-zoom-hide")
+            .data(function(d){ return [d]; })
+            g.enter().append("g").attr("class", "leaflet-zoom-hide");
+        
+        /*
         var anomaly = d3.scale.ordinal().range(["#FEF0D9","#FDCC8A","#FC8D59","#E34A33","#B30000"]).domain([0,1,2,3,4]),
-          sentiment = d3.scale.linear().range(["#1A9641","#D7191C"]).domain([min_social_sentiment,max_social_sentiment]),
+          sentiment = d3.scale.linear().range(["red","green"]).domain([-1,1])//.domain([min_social_sentiment, max_social_sentiment]),
           amount = d3.scale.linear().range([0.3,1]).domain([min_mobily_activity, max_mobily_activity])
+          */
 
-        grid_geojson.features.forEach(function(d){
-
-          var id = d.properties.id;
+        // misteriousissimo.... by azzi
+        collection.features.forEach(function(d){
 
           var properties = data.filter(function(f){
-                return f.id == id;
-            })
+            return f.id == d.properties.id;
+          })
 
           if (properties.length){
               d.properties['in'] = true;
             d3.entries(properties[0]).forEach(function(f){
               d.properties[f.key] = f.value;
             })
-          }else{
+          } else { 
             d.properties['in'] = false;
           }
 
         });
 
-
         m.on("viewreset", drawGrid);
         m.on("moveend", drawGrid);
+
         drawGrid();
 
         function drawGrid() {
           
           var bottomLeft = project(bounds[0]),
-            topRight = project(bounds[1]);
+              topRight = project(bounds[1]),
+              bb = m.getBounds();
 
-          svg.attr("width", topRight[0] - bottomLeft[0])
-            .attr("height", bottomLeft[1] - topRight[1])
-            .style("margin-left", bottomLeft[0] + "px")
-            .style("margin-top", topRight[1] + "px");
+          svg .attr("width", topRight[0] - bottomLeft[0])
+              .attr("height", bottomLeft[1] - topRight[1])
+              .style("margin-left", bottomLeft[0] + "px")
+              .style("margin-top", topRight[1] + "px");
 
-          g.attr("transform", "translate(" + -bottomLeft[0] + "," + -topRight[1] + ")");
+          g   .attr("transform", "translate(" + -bottomLeft[0] + "," + -topRight[1] + ")");
 
-          bb = m.getBounds();
-
-          var data = grid_geojson.features.filter(function(d){
+          var data = collection.features.filter(function(d){
             var centroid = d3.geo.centroid(d),
               latlng = new L.LatLng(centroid[1], centroid[0]),
               inside = bb.contains(latlng);
             if (inside && d.properties.in){ return d;}
           })
 
-          var feature = g.selectAll("path")
+          // the cells
+          var feature = g.selectAll("path.cell")
             .data(data)
+
+          // update existing
+          feature
+            .attr("fill",function(d){ 
+              return colorScale(color(d.properties));
+            })
+            .attr("transform", function(d) {
+              var x = path.centroid(d)[0],
+                  y = path.centroid(d)[1];
+              
+              return  "translate(" + x + "," + y + ")"
+                    + "scale(" + sizeScale(size(d.properties)) + ")"
+                    + "translate(" + -x + "," + -y + ")";
+            })
+            .attr("d", path)
+
+          // create new ones...
+          feature.enter().append("path")
+            .attr("class","cell")
+            .attr("fill",function(d){ 
+              return colorScale(color(d.properties));
+            })
+            .attr("transform", function(d) {
+              var x = path.centroid(d)[0],
+                  y = path.centroid(d)[1];
+              
+              return  "translate(" + x + "," + y + ")"
+                    + "scale(" + sizeScale(size(d.properties)) + ")"
+                    + "translate(" + -x + "," + -y + ")";
+            })
+            .attr("d", path)
 
           feature.exit().remove()
 
-          feature 
-            .attr("fill",function(d){ 
-                //return sentiment(Math.round(Math.random()));
-                return sentiment(d.properties.social_sentiment);
-            }) 
-            .attr("transform", function(d) {
-              var centroid = path.centroid(d),
-                x = centroid[0],
-                y = centroid[1];
-
-              return "translate(" + x + "," + y + ")"
-             //+ "scale(" + amount(Math.round(Math.random()*2)) + ")"
-              + "scale(" + amount(d.properties.mobily_activity) + ")"
-              + "translate(" + -x + "," + -y + ")";
-            })
-            .attr("d", path)
-            .enter().append("path")
-            .attr("fill",function(d){ 
-                //return sentiment(Math.round(Math.random()));
-                return sentiment(d.properties.social_sentiment);
-            })
-            .attr("fill-opacity", 0.7)
-            .attr("stroke", "white")
-            .attr("stroke-width", 1)
-            .attr("transform", function(d) {
-              var centroid = path.centroid(d),
-                x = centroid[0],
-                y = centroid[1];
-              
-
-              return "translate(" + x + "," + y + ")"
-              //+ "scale(" + amount(Math.round(Math.random()*2)) + ")"
-              + "scale(" + amount(d.properties.mobily_activity) + ")"
-              + "translate(" + -x + "," + -y + ")";
-            })
-            .attr("d", path)
         }
 
         function project(x) {
@@ -139,6 +136,14 @@
 
 
       })
+    }
+
+    function color(d){
+      return d.color;
+    }
+
+    function size(d){
+      return d.size;
     }
 
     map.grid = function(x){
@@ -162,6 +167,36 @@
     map.zoom = function(x){
       if (!arguments.length) return zoom;
       zoom = x;
+      return map;
+    }
+
+    map.coordinates = function(x){
+      if (!arguments.length) return coordinates;
+      coordinates = x;
+      return map;
+    }
+
+    map.color = function(x){
+      if (!arguments.length) return color;
+      color = x;
+      return map;
+    }
+
+    map.size = function(x){
+      if (!arguments.length) return size;
+      size = x;
+      return map;
+    }
+
+    map.colorRange = function(x){
+      if (!arguments.length) return colorRange;
+      colorRange = x;
+      return map;
+    }
+
+    map.sizeRange = function(x){
+      if (!arguments.length) return sizeRange;
+      sizeRange = x;
       return map;
     }
 

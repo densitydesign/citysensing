@@ -8,9 +8,36 @@ angular.module('citySensing.controllers', [])
     // base grid for the map
     $scope.gridUrl = "grid/grid.json";
     // default initial start value
-    $scope.start = 1365568200000;
+    $scope.start = 1365758354716;
     // default initial end value
-    $scope.end = 1366923600000;
+    $scope.end = 1365618174165;
+
+    $scope.colorList = [
+      {
+        label: "Social Sentiment",
+        value: "social_sentiment"
+      },
+      {
+        label: "Social Activity",
+        value: "social_activity"
+      }
+    ]
+
+    $scope.color = $scope.colorList[0]
+
+    $scope.sizeList = [
+      {
+        label: "Mobile Anomaly",
+        value: "mobily_anomaly"
+      },
+      {
+        label: "Mobile Activity",
+        value: "mobily_activity"
+      }
+    ]
+
+    $scope.size = $scope.sizeList[0]
+
 
     gridService.getGrid($scope.gridUrl).then(
       function(data){
@@ -22,7 +49,7 @@ angular.module('citySensing.controllers', [])
     )
 
     $scope.request = {
-      "cells": []
+      cells: []
     }
 
     // dismiss errors

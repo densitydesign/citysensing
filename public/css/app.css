@@ -6,12 +6,12 @@ html {
 
 
 #map {
-  background-color: #f7f7f7;
+  background-color: #ffffff;
  /* -moz-box-shadow: inset 3px 0px 3px -1px #ddd;
   -webkit-box-shadow: inset 3px 0px 3px -1px #ddd;
   box-shadow: inset 3px 0px 3px -1px #ddd;
   */
-  max-height: 600px;
+  height: 600px;
 }
 
 #panel {
@@ -71,7 +71,7 @@ html {
 }
 
 .btn.active, .btn:active {
-  font-weight: bold;
+
 }
 
 legend {
@@ -99,6 +99,35 @@ legend {
   border: none;
 }
 
+.leaflet-bar a:first-child {
+  -webkit-border-top-left-radius: 2px;
+  border-top-left-radius: -9px;
+  -webkit-border-top-right-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+.leaflet-bar a:last-child {
+  -webkit-border-bottom-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  -webkit-border-bottom-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  border-bottom: none;
+}
+
+.leaflet-tile-pane {
+  opacity: .3;
+}
+
+.leaflet-bar {
+  box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+
+path.cell {
+  fill-opacity: 0.7;
+  stroke-width: 0;
+}
 
 /* Timeline */
 

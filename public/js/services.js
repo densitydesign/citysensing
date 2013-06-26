@@ -3,7 +3,8 @@
 /* Services */
 
 var timelineFocus,
-	sidePanel;
+	sidePanel,
+	mapRequest;
 
 
 angular.module('citySensing.services', [])
@@ -31,16 +32,21 @@ angular.module('citySensing.services', [])
 	    
 	    getMap : function(request){
 	        
-	        var deferred = $q.defer();
-	        $http.post("/api/map", request)
-	        .then(function(response){
-	            deferred.resolve(response.data);
-	        },
-	        function(){
-	            deferred.reject("An error occured while fetching map data");
-	        });
-	        
-	        return deferred.promise;
+	        // aborting previous requests...
+	    	if (mapRequest && mapRequest.readyState != 4) {
+	    		mapRequest.abort();
+	    	}
+
+	        mapRequest = $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/map'
+	        })
+
+	        return mapRequest;
 	    },
 
 	    getTimelineContext : function(request){
@@ -96,16 +102,14 @@ angular.module('citySensing.services', [])
 
 	    getConceptNetwork : function(request){
 	        
-	        var deferred = $q.defer();
-	        $http.post("/api/concept/network", request)
-	        .then(function(response){
-	            deferred.resolve(response.data);
-	        },
-	        function(){
-	            deferred.reject("An error occured while fetching map data");
-	        });
-	        
-	        return deferred.promise;
+	        return $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/concept/network'
+	        })
 	    }
 
 	  }

@@ -3,6 +3,7 @@
 /* Directives */
 
 angular.module('citySensing.directives', [])
+
   .directive('sidePanel', [ 'apiService', function (apiService) {
     return {
       restrict: 'A',
@@ -40,32 +41,43 @@ angular.module('citySensing.directives', [])
 		return {
       restrict: 'A',
       replace: false,
+      scope: {
+        request: '=',
+        grid: '=',
+        color: '=',
+        size: '='
+      },
       link: function postLink(scope, element, attrs) {
 
-        var map = citysensing.map();
-
+        var map = citysensing.map()
+          
         function update() {
         	if (!scope.grid) return;
 
-        	apiService.getMap(scope.request).then(
+          map
+            .color(function(d){ return d[scope.color.value]; })
+            .size(function(d){ return d[scope.size.value]; })
 
-            function(data){
-              d3.select(element[0]).selectAll("svg").remove();
-          		d3.select(element[0])
-            	.append("svg")
-            	.datum(data.cells)
-            	.call(map);
-            }, 
-
-            function(error){
-              scope.error = error;
-            }
-          );
-          
+          apiService.getMap(scope.request)
+            .done(function(data){
+              d3.select(element[0])
+                .datum(data.cells)
+                .call(map)
+            })
+            .fail(function(error){
+              scope.error = (error)
+            })
         }
 
         scope.$watch('request',function(){
-        	console.log("sono partita anche io")
+          update();
+        }, true)
+
+        scope.$watch('color',function(){
+          update();
+        }, true)
+
+        scope.$watch('size',function(){
           update();
         }, true)
 
@@ -88,16 +100,13 @@ angular.module('citySensing.directives', [])
 
         function update() {
 
-        	apiService.getConceptNetwork(scope.request).then(
-
-            function(data){
-            	console.log("yeah",data)
-            }, 
-
-            function(error){
-              scope.error = error;
-            }
-          );
+        	apiService.getConceptNetwork(scope.request)
+          .done(function(data){
+            console.log("NETWORK",data)
+          })
+          .fail(function(error){
+            console.log(error)
+          })
           
         }
 
@@ -198,4 +207,14 @@ angular.module('citySensing.directives', [])
 
       }
     };
-  }]);
+  }])
+
+  .directive('selectpicker', [ function () {
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function postLink(scope, element, attrs) {
+          element.selectpicker();
+      }
+    };
+}]);
