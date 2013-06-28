@@ -4,6 +4,10 @@ html {
   margin: 0px;
 }
 
+h6 {
+  font-size: 12px;
+}
+
 
 #map {
   background-color: #ffffff;
@@ -72,6 +76,20 @@ html {
 
 .btn.active, .btn:active {
 
+}
+
+.bootstrap-select.btn-group, .bootstrap-select.btn-group[class*="span"] {
+  outline: none;
+  margin-bottom: 0px;
+}
+
+.bootstrap-select .btn:focus {
+  outline: 0px dotted #333333 !important;
+  outline: 0px auto -webkit-focus-ring-color !important;
+}
+
+.bootstrap-select.btn-group .btn .filter-option {
+  font-weight: normal;
 }
 
 legend {

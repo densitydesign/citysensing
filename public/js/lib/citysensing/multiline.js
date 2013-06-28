@@ -103,7 +103,6 @@
 
           var brushNode = selection.selectAll("g.brush")
             .data([data])
-            .attr("class", "x brush")
             .call(brush)
           
           brushNode.enter().append("g")
@@ -111,10 +110,30 @@
             .call(brush)
           .selectAll("rect")
             .attr("y", -6)
-            .attr("height", h + 7);
+            .attr("height", h + 7)
+            .selectAll(".resize").append("path")
+              .attr("transform", "translate(0," +  height / 2 + ")")
+              .attr("d", resizePath);
+
 
           brushNode.exit().remove();
 
+        }
+
+        function resizePath(d) {
+          var e = +(d == "e"),
+              x = e ? 1 : -1,
+              y = h / 3;
+
+          return "M" + (.5 * x) + "," + y
+              + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6)
+              + "V" + (2 * y - 6)
+              + "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y)
+              + "Z"
+              + "M" + (2.5 * x) + "," + (y + 8)
+              + "V" + (2 * y - 8)
+              + "M" + (4.5 * x) + "," + (y + 8)
+              + "V" + (2 * y - 8);
         }
 
         /*
