@@ -9,6 +9,7 @@ div#alert.row-fluid
 div.row-fluid
 	div.span2
 		div#panel
+
 			h6 Color by
 				select.show-tick.span12(selectpicker, ng-model="color", ng-options="c.label for c in colorList")
 			h6 Size by
@@ -20,14 +21,17 @@ div.row-fluid
 		div(map, grid="grid", request="request", color="color", size="size")
 
 div.row-fluid
-	div#timeline.span12.breath
-		legend Timeline
-		//div(timeline-focus, request="{{request}}", error="{{error}}")
-		//div(timeline-context, request="{{request}}", error="{{error}}")
+	div.span12.breath
+		h2 Timeline
 		div.multiline(multiline-focus, request="{{request}}", error="{{error}}")
 		div.multiline(multiline-context, request="{{request}}", error="{{error}}")
 
 div.row-fluid
-	div#timeline.span12.breath
-		legend Network
-		div(network, request="{{request}}", error="{{error}}")
+	div.span12.breath
+		h2 Events
+		div(event-list, request="request", error="error")
+
+div.row-fluid
+	div.span12.breath
+		h2 Network
+		//div(network, request="{{request}}", error="{{error}}")

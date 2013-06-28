@@ -4,6 +4,7 @@
 
 var timelineFocus,
 	sidePanel,
+	eventListRequest,
 	mapRequest;
 
 
@@ -47,6 +48,25 @@ angular.module('citySensing.services', [])
 	        })
 
 	        return mapRequest;
+	    },
+
+	    getEventList : function(request){
+	        
+	        // aborting previous requests...
+	    	if (eventListRequest && eventListRequest.readyState != 4) {
+	    		eventListRequest.abort();
+	    	}
+
+	        eventListRequest = $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/eventlist'
+	        })
+
+	        return eventListRequest;
 	    },
 
 	    getTimelineContext : function(request){

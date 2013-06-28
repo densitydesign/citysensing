@@ -14,7 +14,7 @@ angular.module('citySensing.directives', [])
         function update(){
           apiService.getSidePanel(scope.request)
           .done(function(data){
-            console.log("SIDEPANEL >", data)
+
             scope.callsIn = data.calls_in;
               scope.callsOut = data.calls_out;
               scope.messagesIn = data.messages_in;
@@ -36,6 +36,38 @@ angular.module('citySensing.directives', [])
     };
   }])
 
+  .directive('eventList', [ 'apiService', function (apiService) {
+    return {
+      restrict: 'A',
+      replace: false,
+      scope: {
+        request : '=',
+        error: '=',
+        events: '@'
+      },
+      templateUrl: '../templates/eventlist.html',
+      link: function postLink(scope, element, attrs) {
+
+        function update(){
+          apiService.getEventList(scope.request)
+          .done(function(data){
+
+            scope.events = data.events;
+            scope.$apply();
+          })
+          .fail(function(error){
+            scope.error = error;
+          })
+        }
+
+        scope.$watch('request', function(){
+          update();
+        },true)
+
+      }
+    };
+  }])
+
   
 	.directive('map', [ 'apiService', function (apiService) {
 		return {
@@ -47,30 +79,42 @@ angular.module('citySensing.directives', [])
         color: '=',
         size: '='
       },
+
       link: function postLink(scope, element, attrs) {
 
-        var map = citysensing.map()
-          
-        function update() {
-        	if (!scope.grid) return;
+        var cells;
+        var map = citysensing.map();
 
-          map
-            .color(function(d){ return d[scope.color.value]; })
-            .size(function(d){ return d[scope.size.value]; })
-
+        function reload() {
           apiService.getMap(scope.request)
             .done(function(data){
-              d3.select(element[0])
-                .datum(data.cells)
-                .call(map)
+              cells = data.cells;
+              update();
             })
             .fail(function(error){
               scope.error = (error)
             })
         }
+          
+        function update() {
+        	if (!scope.grid || !cells) return;
+
+          map
+            .grid(scope.grid)
+            .color(function(d){ return d[scope.color.value]; })
+            .size(function(d){ return d[scope.size.value]; })
+
+          if (scope.color.value == 'social_activity')
+            map.colorRange(["#FEF0D9","#FDCC8A","#FC8D59","#E34A33","#B30000"])
+          else map.colorRange(['red','green'])
+
+          d3.select(element[0])
+            .datum(cells)
+            .call(map)
+        }
 
         scope.$watch('request',function(){
-          update();
+          reload();
         }, true)
 
         scope.$watch('color',function(){
@@ -82,8 +126,7 @@ angular.module('citySensing.directives', [])
         }, true)
 
         scope.$watch('grid',function(){
-          map.grid(scope.grid)
-          update();
+          reload();
         },true)
 
       }
@@ -96,16 +139,23 @@ angular.module('citySensing.directives', [])
       replace: false,
       link: function postLink(scope, element, attrs) {
 
-        var network = citysensing.network();
+        var network = citysensing.network()
+          .width(element.outerWidth())
+          .height(400)
+
+        var svg = d3.select(element[0])
+          .append("svg")
+          .attr("width", element.outerWidth())
+          .attr("height", 400)
 
         function update() {
 
         	apiService.getConceptNetwork(scope.request)
           .done(function(data){
-            console.log("NETWORK",data)
-          })
-          .fail(function(error){
-            console.log(error)
+            
+            svg
+              .datum(data)
+              .call(network)
           })
           
         }
@@ -180,11 +230,11 @@ angular.module('citySensing.directives', [])
           .width(element.outerWidth())
           .height(100)
           .on("brushed",function(d){
-            /*scope.request.start = d[0].getTime();
+            scope.request.start = d[0].getTime();
             scope.request.end = d[1].getTime();
-            scope.$apply();*/
-          	window.clearInterval(interval)
-            interval = setTimeout(function(){ updateTime(d); }, 1000);
+            scope.$apply();
+          	//window.clearInterval(interval)
+            //interval = setTimeout(function(){ updateTime(d); }, 1000);
           })
 
         function update(){

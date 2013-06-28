@@ -55,6 +55,8 @@ app.post('/api/timeline/context', api.timelineContext);
 app.post('/api/timeline/focus', api.timelineFocus);
 app.post('/api/sidepanel', api.sidepanel);
 app.post('/api/concept/network', api.conceptNetwork);
+app.post('/api/concept/flows', api.conceptFlows);
+app.post('/api/eventlist', api.eventList);
 
 // redirect all others to the index (HTML5 history)
 app.get('*', routes.index);

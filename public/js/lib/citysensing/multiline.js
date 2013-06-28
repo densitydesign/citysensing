@@ -13,7 +13,7 @@
     function vis(selection){
       selection.each(function(data){
 
-        var margin = {top: 20, right: 20, bottom: 30, left: 0},
+        var margin = {top: 10, right: 20, bottom: 30, left: 0},
           w = width - margin.right - margin.left,
           h = height - margin.top - margin.bottom
 
@@ -37,10 +37,16 @@
           d.date = new Date(d.start);
         });
 
-        var line = d3.svg.line()
+        var _line = d3.svg.line()
             .interpolate("basis")
             .x(function(d) { return x(d.date); })
             .y(function(d) { return y(d.value); });
+
+        var line = d3.svg.area()
+            .interpolate("monotone")
+            .x(function(d) { return x(d.date); })
+            .y0(h)
+            .y1(function(d) { return y(d.value); });
 
         color.domain(d3.keys(data[0]).filter(function(key) { return activities.indexOf(key) != -1; }));
 
@@ -67,11 +73,7 @@
           d3.max(lines, function(c) { return d3.max(c.values, function(v) { return v.value; }); })
         ]);
 
-        selection.selectAll("g.axis").remove();
-        selection.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + h + ")")
-            .call(xAxis);
+        
 
         var activity = selection.selectAll(".activity")
           .data(lines)
@@ -89,8 +91,15 @@
         path.enter().append("path")
             .attr("class", "line")
             .style("stroke", function(d) { return color(d.name); })
+            .style("fill", function(d){ return color(d.name); })
             .transition()
               .attr("d", function(d) { return line(d.values); })
+
+        selection.selectAll("g.axis").remove();
+        selection.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h + ")")
+            .call(xAxis);
 
         if (brushing) {
 

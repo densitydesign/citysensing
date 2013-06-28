@@ -4,6 +4,12 @@ html {
   margin: 0px;
 }
 
+h2 {
+  font-family: "Open Sans";
+  font-weight: 200;
+  font-size: 16px;
+}
+
 h6 {
   font-size: 12px;
 }
@@ -64,6 +70,10 @@ h6 {
   text-shadow: none;
 }
 
+.navbar-masthead .nav > li > a:hover {
+  color: #444;
+}
+
 .navbar-text {
   color: #999;
 }
@@ -114,7 +124,7 @@ legend {
 /* Map */
 
 .leaflet-control-zoom, .leaflet-control-layers {
-  border: none;
+  border: 1px solid #dddddd;
 }
 
 .leaflet-bar a:first-child {
@@ -137,7 +147,7 @@ legend {
 }
 
 .leaflet-bar {
-  box-shadow: 0 1px 6px rgba(0,0,0,0.35);
+  box-shadow: none;
   -webkit-border-radius: 2px;
   border-radius: 2px;
 }
@@ -179,5 +189,22 @@ rect.bar {
 
 
 .multiline path.line {
-  fill:none;
+  fill-opacity: .05;
+}
+
+.resize path {
+  fill: #666;
+  fill-opacity: .8;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.node {
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .1;
 }
