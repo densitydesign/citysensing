@@ -48,7 +48,11 @@ angular.module('citySensing.controllers', [])
       }
     )
 
+    $scope.showMap = true;
+
     $scope.request = {
+      start: 1365469200000,
+      end: 1366192800000,
       cells: []
     }
 

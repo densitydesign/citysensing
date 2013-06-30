@@ -172,7 +172,7 @@ path.cell {
 
 .axis text {
   font-size: 11px;
-}
+}cyber
 
 rect.bar {
   shape-rendering: crispEdges;
@@ -199,6 +199,14 @@ rect.bar {
   stroke-width: 1.5px;
 }
 
+.cell {
+  cursor:pointer;
+}
+
+.cell:hover {
+  fill-opacity:1;
+}
+
 .node {
   stroke: #fff;
   stroke-width: 1px;
@@ -207,4 +215,50 @@ rect.bar {
 .link {
   stroke: #999;
   stroke-opacity: .1;
+}
+
+.graph-container {
+  width: 70%;
+  height: 800px;
+}
+
+
+
+.bars ul {
+    list-style-type: none;
+    margin: 0px;
+    height: 200px;
+    overflow: scroll;
+}
+
+.bars ul li {
+  position: relative;
+  font-size: 12px;
+}
+
+.bars .filter-item {
+  padding: 2px 8px;
+  text-decoration: none;
+  color: #888;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  overflow: hidden;
+  display: block;
+}
+
+.bars ul li span.bar {
+  position: absolute;
+  background-color: #eee;
+  display: inline-block;
+  width: 0%;
+  top: 2px;
+  bottom: 2px;
+  right: 0px;
+  z-index: -1;
+}
+
+.bars ul li span.count {
+  float: right;
+  font-weight: bold;
 }

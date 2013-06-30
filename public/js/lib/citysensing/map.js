@@ -14,8 +14,10 @@
             center: new L.LatLng(coordinates[0], coordinates[1]),
             zoom: zoom,
             minZoom : minZoom,
-            maxZoom : maxZoom
+            maxZoom : maxZoom,
+            scrollWheelZoom : false
         }),
+        showMap = true,
         colorRange = ['red','green'],
         sizeRange = [0.1,1],
         baseLayers = {
@@ -24,7 +26,7 @@
 
     m.addLayer(l);
 
-    L.control.layers({},baseLayers).addTo(m);
+    //L.control.layers({},baseLayers).addTo(m);
 
 
     function map(selection){
@@ -45,6 +47,11 @@
         var g = svg.selectAll("g.leaflet-zoom-hide")
             .data(function(d){ return [d]; })
             g.enter().append("g").attr("class", "leaflet-zoom-hide");
+
+        if (showMap) d3.selectAll(".leaflet-tile-pane")
+          .style("opacity",.3)
+        else d3.selectAll(".leaflet-tile-pane")
+          .style("opacity",0)
 
         var cells = {};
 
@@ -84,6 +91,8 @@
             .attr("fill",function(d){ 
               return colorScale(color(d.properties));
             })
+            .attr("data-title", function(d){ return d.properties.id;})
+            .attr("data-toggle","tooltip")
             .attr("transform", function(d) {
               var x = path.centroid(d)[0],
                   y = path.centroid(d)[1];
@@ -96,6 +105,8 @@
           // create new ones...
           feature.enter().append("path")
             .attr("class","cell")
+            .attr("data-title", function(d){ return d.properties.id;})
+            .attr("data-toggle","tooltip")
             .attr("fill",function(d){ 
               return colorScale(color(d.properties));
             })
@@ -108,6 +119,13 @@
                     + "translate(" + -x + "," + -y + ")";
             })
             .attr("d", path)
+
+          $(".tooltip").remove();
+
+          $(".cell").tooltip({
+            'container': 'body',
+            'html':'true'
+          });
 
           feature.exit().remove()
 
@@ -181,6 +199,12 @@
     map.sizeRange = function(x){
       if (!arguments.length) return sizeRange;
       sizeRange = x;
+      return map;
+    }
+
+    map.showMap = function(x){
+      if (!arguments.length) return showMap;
+      showMap = x;
       return map;
     }
 

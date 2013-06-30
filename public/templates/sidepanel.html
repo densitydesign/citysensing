@@ -1,3 +1,17 @@
+<div class="bars">
+	<h6>Hashtags</h6>
+	<ul> 
+	    <li ng-repeat="hashtag in hashtags | orderBy:'value':true"> 
+      		<span class="bar" style="width:20%"></span>
+      		<div class="filter-item">
+          		<span class="count">{{hashtag.value}}</span> 
+          		{{hashtag.label}}
+          	</div>
+	    </li> 
+  	</ul> 
+</div>
+
+
 <dl>
 	<dt>Calls in</dt>
 	<dd>{{callsIn}}</dd>

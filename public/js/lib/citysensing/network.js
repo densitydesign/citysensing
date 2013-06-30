@@ -59,11 +59,15 @@
             .style("fill", function(d) { return color(d.group); })
 
         node.append("title")
+            .attr("data-title", function(d){ return d.name;})
+            .attr("data-toggle","tooltip")
             .text(function(d) { return d.name; });
 
         node.enter().append("circle")
             .attr("class", "node")
             .attr("r", 5)
+            .attr("data-title", function(d){ return d.name;})
+            .attr("data-toggle","tooltip")
             .style("fill", function(d) { return color(d.group); })
             .call(force.drag);
 
@@ -71,6 +75,12 @@
             .text(function(d) { return d.name; });
 
         node.exit().remove();
+
+        $(".node").tooltip({
+          'container': 'body',
+          'html':'true'
+        });
+
 
         force.on("tick", tick);
 

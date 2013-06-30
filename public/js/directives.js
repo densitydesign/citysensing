@@ -14,14 +14,15 @@ angular.module('citySensing.directives', [])
         function update(){
           apiService.getSidePanel(scope.request)
           .done(function(data){
-
+            console.log(data);
+            scope.hashtags = data.hashtags;
             scope.callsIn = data.calls_in;
-              scope.callsOut = data.calls_out;
-              scope.messagesIn = data.messages_in;
-              scope.messagesOut = data.messages_out;
-              scope.dataTraffic = data.data_traffic;
-              scope.hashtags = data.hashtags.slice(0,20);
-              scope.$apply();
+            scope.callsOut = data.calls_out;
+            scope.messagesIn = data.messages_in;
+            scope.messagesOut = data.messages_out;
+            scope.dataTraffic = data.data_traffic;
+            scope.hashtags = data.hashtags.slice(0,20);
+            scope.$apply();
           })
           .fail(function(error){
             scope.error = error;
@@ -77,7 +78,8 @@ angular.module('citySensing.directives', [])
         request: '=',
         grid: '=',
         color: '=',
-        size: '='
+        size: '=',
+        showMap: '='
       },
 
       link: function postLink(scope, element, attrs) {
@@ -103,9 +105,16 @@ angular.module('citySensing.directives', [])
             .grid(scope.grid)
             .color(function(d){ return d[scope.color.value]; })
             .size(function(d){ return d[scope.size.value]; })
+            .showMap(scope.showMap)
 
           if (scope.color.value == 'social_activity')
-            map.colorRange(["#FEF0D9","#FDCC8A","#FC8D59","#E34A33","#B30000"])
+            map.colorRange([
+              d3.rgb(241, 238, 246),
+              d3.rgb(189, 201, 225),
+              d3.rgb(116, 169, 207),
+              d3.rgb(43, 140, 190),
+              d3.rgb(4, 90, 141)
+            ])
           else map.colorRange(['red','green'])
 
           d3.select(element[0])
@@ -129,6 +138,10 @@ angular.module('citySensing.directives', [])
           reload();
         },true)
 
+        scope.$watch('showMap',function(){
+          update();
+        },true)
+
       }
     };
   }])
@@ -137,27 +150,32 @@ angular.module('citySensing.directives', [])
 		return {
       restrict: 'A',
       replace: false,
+      templateUrl: '../templates/network.html',
       link: function postLink(scope, element, attrs) {
 
-        var network = citysensing.network()
-          .width(element.outerWidth())
-          .height(400)
-
-        var svg = d3.select(element[0])
-          .append("svg")
-          .attr("width", element.outerWidth())
-          .attr("height", 400)
+        var network = citysensing.graph();
 
         function update() {
 
         	apiService.getConceptNetwork(scope.request)
           .done(function(data){
-            
-            svg
-              .datum(data)
-              .call(network)
-          })
-          
+
+            d3.select(element[0]).selectAll(".graph-container").remove();
+              
+            d3.select(element[0])
+              .append("div")
+                .attr("class","graph-container")
+                .datum(data)
+                .call(network)
+            })
+        }
+
+        scope.start = function(){
+          network.start();
+        }
+
+        scope.stop = function(){
+          network.stop();
         }
 
         scope.$watch('request',function(){

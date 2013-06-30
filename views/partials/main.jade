@@ -10,6 +10,11 @@ div.row-fluid
 	div.span2
 		div#panel
 
+			
+			label.checkbox
+				input(type="checkbox", ng-model="showMap")
+				span Show streets
+
 			h6 Color by
 				select.show-tick.span12(selectpicker, ng-model="color", ng-options="c.label for c in colorList")
 			h6 Size by
@@ -18,7 +23,7 @@ div.row-fluid
 			div(side-panel, request="{{request}}")
 
 	div#map.span10
-		div(map, grid="grid", request="request", color="color", size="size")
+		div(map, grid="grid", request="request", color="color", size="size", show-map="showMap")
 
 div.row-fluid
 	div.span12.breath
@@ -26,12 +31,24 @@ div.row-fluid
 		div.multiline(multiline-focus, request="{{request}}", error="{{error}}")
 		div.multiline(multiline-context, request="{{request}}", error="{{error}}")
 
-div.row-fluid
-	div.span12.breath
-		h2 Events
-		div(event-list, request="request", error="error")
 
 div.row-fluid
 	div.span12.breath
-		h2 Network
-		//div(network, request="{{request}}", error="{{error}}")
+
+		ul#myTab.nav.nav-tabs
+			li.active
+				a(href="#events", data-toggle="tab") Events
+			li
+				a(href="#network", data-toggle="tab") Network
+
+div.row-fluid
+	div.span12.breath.tab-content
+
+		div.tab-pane.active(id="events", event-list, request="request", error="error")
+		div.tab-pane.span12(id="network", network, request="{{request}}", error="{{error}}")
+
+script(type='text/javascript')
+	$('#myTab a').click(function (e) {
+		e.preventDefault();
+		$(this).tab('show');
+	})
