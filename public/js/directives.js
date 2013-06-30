@@ -165,9 +165,23 @@ angular.module('citySensing.directives', [])
             d3.select(element[0])
               .append("div")
                 .attr("class","graph-container")
+                .style("width","1000px")
+                .style("height","800px")
+            
+            // trick for sigma start
+            $(d3.select(element[0]).node()).parent().css("display","block")
+
+            d3.select(element[0])
+              .selectAll(".graph-container")
                 .datum(data)
                 .call(network)
+
+            // trick for sigma end
+            $(d3.select(element[0]).node()).parent().css("display","")
+
             })
+
+
         }
 
         scope.start = function(){

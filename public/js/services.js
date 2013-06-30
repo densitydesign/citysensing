@@ -5,7 +5,8 @@
 var timelineFocus,
 	sidePanel,
 	eventListRequest,
-	mapRequest;
+	mapRequest,
+	networkRequest;
 
 
 angular.module('citySensing.services', [])
@@ -122,7 +123,12 @@ angular.module('citySensing.services', [])
 
 	    getConceptNetwork : function(request){
 	        
-	        return $.ajax({
+	        // aborting previous requests...
+	    	if (networkRequest && networkRequest.readyState != 4) {
+	    		networkRequest.abort();
+	    	}
+
+	        networkRequest = $.ajax({
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
@@ -130,6 +136,8 @@ angular.module('citySensing.services', [])
 	        	contentType: 'application/json',
 	        	url: 'api/concept/network'
 	        })
+
+	        return networkRequest;
 	    }
 
 	  }

@@ -218,8 +218,7 @@ rect.bar {
 }
 
 .graph-container {
-  width: 70%;
-  height: 800px;
+  margin: 0 auto;
 }
 
 

@@ -40,14 +40,20 @@ div.row-fluid
 				a(href="#events", data-toggle="tab") Events
 			li
 				a(href="#network", data-toggle="tab") Network
+			li
+				a(href="#flows", data-toggle="tab") Flows
+
 
 div.row-fluid
 	div.span12.breath.tab-content
+		div.row-fluid.active.tab-pane(id="events")
+			div.span12(event-list, request="request", error="error")
+		div.row-fluid.tab-pane(id="network")
+			div.span12(network, request="{{request}}", error="{{error}}")
+		div.row-fluid.tab-pane(id="flows")
+			div.span12(request="{{request}}", error="{{error}}")
 
-		div.tab-pane.active(id="events", event-list, request="request", error="error")
-		div.tab-pane.span12(id="network", network, request="{{request}}", error="{{error}}")
-
-script(type='text/javascript')
+script.
 	$('#myTab a').click(function (e) {
 		e.preventDefault();
 		$(this).tab('show');
