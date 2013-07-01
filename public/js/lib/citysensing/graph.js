@@ -5,7 +5,8 @@
   citysensing.graph = function(){
 
   	var graph = {},
-      sig;
+      sig,
+      monitor;
 
   	function vis(selection){
       selection.each(function(data){
@@ -76,25 +77,49 @@
 						nodeBorderColor: '#fff',
 						defaultNodeBorderColor: '#fff'
       		})
-
-      		.graphProperties({
+			.graphProperties({
 			       minNodeSize: 4,
 			       maxNodeSize: 10
-			      // minEdgeSize: 1,
-			      // maxEdgeSize: 20
+			       //minEdgeSize: 1,
+			       //maxEdgeSize: 20
 			     })
 
       		.mouseProperties({
 			      maxRatio: 4
 			    })
 
-			    .configProperties({
-						auto : false,
-						drawLabels : true,
-						drawHoverNodes: true,
-			    })
+			//    .configProperties({
+			//			auto : false,
+			//			drawLabels : true,
+			//			drawHoverNodes: true,
+			//    })
 
-			  var edgeValue = d3.scale.linear().domain([ d3.min(data.links, function(d){return d.value; }), d3.max(data.links, function(d){return d.value; })]).range([1,20])
+
+		 // Bind events :
+		 sig.bind('overnodes',function(event){
+		 	var nodes = event.content;
+		 	var neighbors = {};
+		 	sig.iterEdges(function(e){
+		 		if(nodes.indexOf(e.source)>=0 || nodes.indexOf(e.target)>=0){
+		 			neighbors[e.source] = 1;
+		 			neighbors[e.target] = 1;
+		 		}
+		 	}).iterNodes(function(n){
+		 		if(!neighbors[n.id]){
+		 			n.hidden = 1;
+		 		}else{
+		 			n.hidden = 0;
+		 		}
+		 	}).draw(2,2,2);
+		 }).bind('outnodes',function(){
+		 	sig.iterEdges(function(e){
+		 		e.hidden = 0;
+		 	}).iterNodes(function(n){
+		 		n.hidden = 0;
+		 	}).draw(2,2,2);
+		 });
+
+		var edgeValue = d3.scale.linear().domain([ d3.min(data.links, function(d){return d.value; }), d3.max(data.links, function(d){return d.value; })]).range([1,20])
 
       	data.nodes.forEach(function(d,i){
       		sig.addNode(d.id, {
@@ -114,12 +139,39 @@
 							i,
 							d.source,
 							d.target,
-							//edgeValue(d)
-							{weight: edgeValue(d) }
+							{size: edgeValue(d.value), color:"rgba(165,165,165,0.25)" }
 						)
 	      	});
 
+	    sig.iterNodes(function(node){
+        		node.size = node.inDegree;
+      	});
+
+
         sig.startForceAtlas2();
+
+    		prevSpeed = 1
+    		prevDiff = 0
+
+        monitor = window.setInterval(checkSpeed, 1000);
+
+        function checkSpeed(){
+
+        	var speed = sig.forceatlas2.p.speed;
+
+        	// Global cooling (homebrew to check)
+        	var diff = Math.abs(prevSpeed - speed);
+        	console.log(diff, prevDiff, speed, Math.sqrt(data.nodes.length) / 100, speed/data.nodes.length)
+        	if (diff <= prevDiff) {
+        		if (speed < 0.0045) {
+        			vis.stop();
+        		}
+        	}
+        	prevDiff = diff;
+        	prevSpeed = speed;
+
+        	  }
+
 			
       })
   	}
@@ -143,6 +195,7 @@
 
     vis.stop = function(){
     	sig.stopForceAtlas2();
+    	window.clearInterval(monitor);
       return vis;
     }
 
