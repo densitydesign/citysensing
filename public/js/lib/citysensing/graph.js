@@ -114,8 +114,8 @@
 							i,
 							d.source,
 							d.target,
-							edgeValue(d)
-							//{weight: edgeValue(d) }
+							//edgeValue(d)
+							{weight: edgeValue(d) }
 						)
 	      	});
 
