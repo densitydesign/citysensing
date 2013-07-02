@@ -108,14 +108,8 @@ angular.module('citySensing.directives', [])
             .showMap(scope.showMap)
 
           if (scope.color.value == 'social_activity')
-            map.colorRange([
-              d3.rgb(241, 238, 246),
-              d3.rgb(189, 201, 225),
-              d3.rgb(116, 169, 207),
-              d3.rgb(43, 140, 190),
-              d3.rgb(4, 90, 141)
-            ])
-          else map.colorRange(['red','green'])
+            map.colorRange(['#EFF3FF','#BDD7E7', '#6BAED6', '#3182BD', '#08519C'])
+          else map.colorRange(['#D7191C','#FDAE61','#F5F0DF','#A6D96A','#1A9641'])
 
           d3.select(element[0])
             .datum(cells)

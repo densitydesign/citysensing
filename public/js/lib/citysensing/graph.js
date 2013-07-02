@@ -150,28 +150,6 @@
 
         sig.startForceAtlas2();
 
-    		prevSpeed = 1
-    		prevDiff = 0
-
-        //monitor = window.setInterval(checkSpeed, 1000);
-
-        function checkSpeed(){
-
-        	var speed = sig.forceatlas2.p.speed;
-
-        	// Global cooling (homebrew to check)
-        	var diff = Math.abs(prevSpeed - speed);
-        	console.log(diff, prevDiff, speed, Math.sqrt(data.nodes.length) / 100, speed/data.nodes.length)
-        	if (diff <= prevDiff) {
-        		if (speed < 0.0045) {
-        			vis.stop();
-        		}
-        	}
-        	prevDiff = diff;
-        	prevSpeed = speed;
-
-        	  }
-
 			
       })
   	}
@@ -195,7 +173,6 @@
 
     vis.stop = function(){
     	sig.stopForceAtlas2();
-    	//window.clearInterval(monitor);
       return vis;
     }
 

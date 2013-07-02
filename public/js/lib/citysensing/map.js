@@ -36,8 +36,8 @@
             path = d3.geo.path().projection(project),
             bounds = d3.geo.bounds(collection);
 
-        var colorScale = d3.scale.linear().range(colorRange).domain([ d3.min(data, color), d3.max(data, color) ]),
-            sizeScale = d3.scale.linear().range(sizeRange).domain([ d3.min(data, size), d3.max(data, size) ])
+        var colorScale = d3.scale.quantile().range(colorRange).domain([ d3.min(data, color), d3.mean(data, color), d3.max(data, color) ]),
+          sizeScale = d3.scale.linear().range(sizeRange).domain([ d3.min(data, size), d3.max(data, size) ]);
 
         // main overlay
         var svg = d3.select(m.getPanes().overlayPane).selectAll("svg")
