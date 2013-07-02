@@ -1,16 +1,20 @@
 // Mathieu Jacomy @ Sciences Po Médialab & WebAtlas
 // (requires sigma.js to be loaded)
 sigma.forceatlas2 = sigma.forceatlas2 || {};
+
+var sig;
+
 sigma.forceatlas2.ForceAtlas2 = function(graph) {
   sigma.classes.Cascade.call(this);
   var self = this;
   this.graph = graph;
+  count = 0
 
   this.p = {
-    linLogMode: true,
+    linLogMode: false,
     outboundAttractionDistribution: false,
     adjustSizes: false,
-    edgeWeightInfluence: 2,
+    edgeWeightInfluence: 0,
     scalingRatio: 1,
     strongGravityMode: false,
     gravity: 1,
@@ -20,6 +24,8 @@ sigma.forceatlas2.ForceAtlas2 = function(graph) {
     speed: 1,
     outboundAttCompensation: 1,
     totalSwinging: 0,
+    swingVSnode1: 0,
+    banderita: false,
     totalEffectiveTraction: 0,
     complexIntervals: 500,
     simpleIntervals: 1000
@@ -215,7 +221,9 @@ sigma.forceatlas2.ForceAtlas2 = function(graph) {
       case 4: // Auto adjust speed
         var totalSwinging = 0;  // How much irregular movement
         var totalEffectiveTraction = 0;  // Hom much useful movement
-
+        var swingingSum=0;
+        var promdxdy=0;  /**/
+        count++
         nodes.forEach(function(n) {
           var fixed = n.fixed || false;
           if (!fixed && n.fa2) {
@@ -225,16 +233,27 @@ sigma.forceatlas2.ForceAtlas2 = function(graph) {
             // If the node has a burst change of direction,
             // then it's not converging.
             totalSwinging += n.fa2.mass * swinging;
+            swingingSum += swinging;
+            promdxdy += (Math.abs(n.fa2.dx)+Math.abs(n.fa2.dy))/2; /**/
+            
             totalEffectiveTraction += n.fa2.mass *
-                                      0.5 *
+                                      0.8 * // was 0.5
                                       Math.sqrt(
                                         Math.pow(n.fa2.old_dx + n.fa2.dx, 2) +
                                         Math.pow(n.fa2.old_dy + n.fa2.dy, 2)
                                       );
           }
         });
-
+        
         self.p.totalSwinging = totalSwinging;
+        
+        var convg= ((Math.pow(nodes.length,2))/promdxdy);    /**/
+        var swingingVSnodes_length = swingingSum/nodes.length;     /**/
+        if(convg > swingingVSnodes_length){ 
+
+            sig.stopForceAtlas2(); 
+        }
+        
         self.p.totalEffectiveTraction = totalEffectiveTraction;
 
         // We want that swingingMovement < tolerance * convergenceMovement
@@ -935,8 +954,9 @@ sigma.publicPrototype.startForceAtlas2 = function() {
     this.forceatlas2 = new sigma.forceatlas2.ForceAtlas2(this._core.graph);
     this.forceatlas2.setAutoSettings();
     this.forceatlas2.init();
+    sig = this;
   //}
-
+  //$("#overviewzone").hide();
   this.addGenerator('forceatlas2', this.forceatlas2.atomicGo, function(){
     return true;
   });
@@ -944,4 +964,7 @@ sigma.publicPrototype.startForceAtlas2 = function() {
 
 sigma.publicPrototype.stopForceAtlas2 = function() {
   this.removeGenerator('forceatlas2');
+  //updateMap();
+  //partialGraph.refresh();
+  //$("#overviewzone").show();
 };

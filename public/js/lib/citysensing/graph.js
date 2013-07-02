@@ -153,7 +153,7 @@
     		prevSpeed = 1
     		prevDiff = 0
 
-        monitor = window.setInterval(checkSpeed, 1000);
+        //monitor = window.setInterval(checkSpeed, 1000);
 
         function checkSpeed(){
 
@@ -195,7 +195,7 @@
 
     vis.stop = function(){
     	sig.stopForceAtlas2();
-    	window.clearInterval(monitor);
+    	//window.clearInterval(monitor);
       return vis;
     }
 
