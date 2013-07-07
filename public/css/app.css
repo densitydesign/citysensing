@@ -285,3 +285,7 @@ rect.bar {
     margin: 8px 10px 0px 0px;
 
 }
+
+div[flows] {
+  text-align: center;
+}
