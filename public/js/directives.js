@@ -14,7 +14,6 @@ angular.module('citySensing.directives', [])
         function update(){
           apiService.getSidePanel(scope.request)
           .done(function(data){
-            console.log(data);
             scope.hashtags = data.hashtags;
             scope.callsIn = data.calls_in;
             scope.callsOut = data.calls_out;
@@ -52,7 +51,6 @@ angular.module('citySensing.directives', [])
         function update(){
           apiService.getEventList(scope.request)
           .done(function(data){
-
             scope.events = data.events;
             scope.$apply();
           })
@@ -108,8 +106,8 @@ angular.module('citySensing.directives', [])
             .showMap(scope.showMap)
 
           if (scope.color.value == 'social_activity')
-            map.colorRange(['#EFF3FF','#BDD7E7', '#6BAED6', '#3182BD', '#08519C'])
-          else map.colorRange(['#D7191C','#FDAE61','#F5F0DF','#A6D96A','#1A9641'])
+            map.colorRange(['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381'])
+          else map.colorRange(['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641'])
 
           d3.select(element[0])
             .datum(cells)
@@ -121,6 +119,7 @@ angular.module('citySensing.directives', [])
         }, true)
 
         scope.$watch('color',function(){
+          scope.mapColor ="giorgio";
           update();
         }, true)
 
@@ -184,6 +183,45 @@ angular.module('citySensing.directives', [])
 
         scope.stop = function(){
           network.stop();
+        }
+
+        scope.$watch('request',function(){
+          update();
+        }, true)
+
+      }
+    };
+  }])
+
+  .directive('flows', [ 'apiService', function (apiService) {
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function postLink(scope, element, attrs) {
+
+        var flows = citysensing.flows()
+          .width(1000)
+          .height(2000)
+
+        var svg = d3.select(element[0])
+          .append("svg")
+          .attr("width", 1000)
+          .attr("height", 2000)
+
+        function update() {
+
+          var fake = {};
+          fake.start = scope.request.start;
+          fake.end = scope.request.end;
+          fake.cells = [3843, 6450];
+
+          apiService.getConceptFlows(fake)
+            .done(function(data){
+              svg
+              .datum(data)
+              .call(flows)
+            })
+
         }
 
         scope.$watch('request',function(){
@@ -293,4 +331,40 @@ angular.module('citySensing.directives', [])
           element.selectpicker();
       }
     };
+  }])
+
+  .directive('mapLegend', [ function () {
+    return {
+      restrict: 'A',
+      replace: false,
+      templateUrl: '../templates/maplegend.html',
+      link: function postLink(scope, element, attrs) {
+
+        scope.$watch('color', function(){
+          if (!scope.color) return;
+          if(scope.color.value == "social_activity")
+            scope.mapLegend = ['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']
+          else scope.mapLegend = ['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641']
+        })
+
+      }
+    };
+  }])
+
+ .directive('timeLegend', [ function () {
+  return {
+    restrict: 'A',
+    replace: false,
+    templateUrl: '../templates/timelegend.html',
+    link: function postLink(scope, element, attrs) {
+
+      scope.$watch('color', function(){
+        if (!scope.color) return;
+        if(scope.color.value == "social_activity")
+          scope.mapLegend = ['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']
+        else scope.mapLegend = ['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641']
+      })
+
+    }
+  };
 }]);

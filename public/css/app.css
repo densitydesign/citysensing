@@ -261,3 +261,27 @@ rect.bar {
   float: right;
   font-weight: bold;
 }
+
+
+
+.legend {
+  width:20px;
+  height: 20px;
+}
+
+.social-activity {
+  background-color: #ff7f0e;
+  width:20px;
+  height: 2px;
+  float: left;
+  margin: 8px 10px 0px 0px;
+}
+
+.mobile-anomaly{
+  background-color: #1f77b4;
+  width:20px;
+  height: 2px;
+  float: left;
+    margin: 8px 10px 0px 0px;
+
+}

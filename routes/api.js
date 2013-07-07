@@ -2,7 +2,7 @@
 var request = require('request'),
 	//baseUrl = 'http://80.18.73.38:8175/0.3',
 	baseUrl = 'http://156.54.107.76:8003/0.3',
-	headers = {}//{ 'content-type': 'text/json' };
+	headers = { 'Content-type': 'application/json' };
 
 /*
 function addApi(name, url) {
@@ -113,6 +113,9 @@ exports.conceptNetwork = function (req, res) {
   	},
 
   	function (error, response, body) {
+
+      console.log("network?")
+
   		if (response.statusCode == 201) {
     		res.json(JSON.parse(body));
 	  	} else res.json({'error':JSON.parse(body)});
@@ -144,6 +147,23 @@ exports.eventList = function (req, res) {
       url : baseUrl + '/eventlist',
       headers : headers,
       body : JSON.stringify(req.body)
+    },
+
+    function (error, response, body) {
+      if (response.statusCode == 201) {
+        res.json(JSON.parse(body));
+      } else res.json({'error':JSON.parse(body)});
+    }
+  )
+};
+
+exports.test = function (req, res) {
+  console.log("Test")
+  request(
+    {
+      method : 'GET',
+      url : 'https://graph.facebook.com/nike',
+      headers : headers
     },
 
     function (error, response, body) {

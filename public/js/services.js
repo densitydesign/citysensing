@@ -6,7 +6,8 @@ var timelineFocus,
 	sidePanel,
 	eventListRequest,
 	mapRequest,
-	networkRequest;
+	networkRequest,
+	flowRequest;
 
 
 angular.module('citySensing.services', [])
@@ -138,6 +139,26 @@ angular.module('citySensing.services', [])
 	        })
 
 	        return networkRequest;
+	    },
+
+	    getConceptFlows : function(request){
+
+	    	// aborting previous requests...
+	    	if (flowRequest && flowRequest.readyState != 4) {
+	    		flowRequest.abort();
+	    	}
+
+	        flowRequest = $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/concept/flows'
+	        })
+
+	        return flowRequest;
+	        
 	    }
 
 	  }
