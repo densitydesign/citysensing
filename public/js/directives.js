@@ -82,13 +82,19 @@ angular.module('citySensing.directives', [])
 
       link: function postLink(scope, element, attrs) {
 
-        var cells;
+        var cells = [];
         var map = citysensing.map();
 
-        function reload() {
+        function reload() {         
           apiService.getMap(scope.request)
             .done(function(data){
-              cells = data.cells;
+
+              //dobbiamo vedere la differenza tra 
+              var cellsObject = {};
+              cells.forEach(function(d){ cellsObject[d.id] = d; })
+              data.cells.forEach(function(d){ cellsObject[d.id] = d; })
+              cells = d3.values(cellsObject);
+              
               update();
             })
             .fail(function(error){
@@ -104,6 +110,19 @@ angular.module('citySensing.directives', [])
             .color(function(d){ return d[scope.color.value]; })
             .size(function(d){ return d[scope.size.value]; })
             .showMap(scope.showMap)
+            .on("selected",function(d){
+
+              var index = scope.request.cells.indexOf(d);
+              console.log(scope.request.cells)
+              if (index == -1){
+                scope.request.cells.push(d);
+              }
+              else{ 
+                scope.request.cells.splice(index,1);
+              }
+
+              scope.$apply();
+            })
 
           if (scope.color.value == 'social_activity')
             map.colorRange(['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381'])
@@ -114,9 +133,8 @@ angular.module('citySensing.directives', [])
             .call(map)
         }
 
-        scope.$watch('request',function(){
-          reload();
-        }, true)
+        scope.$watch('request.start', reload, true);
+        scope.$watch('request.end', reload, true);
 
         scope.$watch('color',function(){
           scope.mapColor ="giorgio";
@@ -275,7 +293,8 @@ angular.module('citySensing.directives', [])
       replace: false,
       link: function postLink(scope, element, attrs) {
 
-      	var interval;
+      	var steps = [],
+            interval;
 
       	function updateTime(d){
       		scope.request.start = d[0].getTime();
@@ -305,8 +324,22 @@ angular.module('citySensing.directives', [])
 
           apiService.getTimelineContext(scope.request)
           .done(function(data){
+            
+            var stepsObject = {};
+            steps.forEach(function(d){ 
+              var obj = d;
+              obj.mobily_anomaly = 0;
+              obj.social_activity = 0;
+
+              stepsObject[d.start] = obj;
+
+            });
+            data.steps.forEach(function(d){ stepsObject[d.start] = d; })
+            
+            steps = d3.values(stepsObject);
+
             svg
-              .datum(data.steps)
+              .datum(steps)
               .call(multiline)
           })
           .fail(function(error){

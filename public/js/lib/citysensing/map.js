@@ -22,7 +22,8 @@
         sizeRange = [0.1,1],
         baseLayers = {
           "Map": l
-        };
+        },
+        dispatch = d3.dispatch("selected");
 
     m.addLayer(l);
 
@@ -91,7 +92,7 @@
             .attr("fill",function(d){ 
               return colorScale(color(d.properties));
             })
-            .attr("data-title", function(d){ return d.properties.id;})
+            .attr("data-title", function(d){return d.properties.id;})
             .attr("data-toggle","tooltip")
             .attr("transform", function(d) {
               var x = path.centroid(d)[0],
@@ -119,6 +120,14 @@
                     + "translate(" + -x + "," + -y + ")";
             })
             .attr("d", path)
+            .on("click", function(d){
+              dispatch.selected(d.properties.id);
+              d.properties.selected = !d.properties.selected;
+              updateSelected();
+            })
+            .each(function(d){
+              d.properties.selected = false;
+            })
 
           $(".tooltip").remove();
 
@@ -128,6 +137,15 @@
           });
 
           feature.exit().remove()
+
+
+          function updateSelected(){
+
+          feature
+            .style("fill-opacity",function(d){ 
+              return d.properties.selected ? 1 : 0.2
+            })
+          }
 
         }
 
@@ -207,6 +225,8 @@
       showMap = x;
       return map;
     }
+
+    d3.rebind(map, dispatch, 'on');
 
     return map;
   }

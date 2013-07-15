@@ -8,9 +8,9 @@ angular.module('citySensing.controllers', [])
     // base grid for the map
     $scope.gridUrl = "grid/grid.json";
     // default initial start value
-    $scope.start = 1365758354716;
+    $scope.star = 1365469200000;
     // default initial end value
-    $scope.end = 1365618174165;
+    $scope.end = 1366192800000;
 
     $scope.colorList = [
       {
