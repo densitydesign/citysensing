@@ -36,8 +36,6 @@
 			    .links(data.links)
 			    .layout(32);
 
-			  console.log(data.nodes)
-
 			  var path = sankey.link();
 
 			  var link = selection.selectAll(".link")

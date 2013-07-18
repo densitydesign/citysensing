@@ -102,6 +102,7 @@
             })
             .attr("d", path)
 
+
           // create new ones...
           feature.enter().append("path")
             .attr("class","cell")
@@ -119,6 +120,7 @@
                     + "translate(" + -x + "," + -y + ")";
             })
             .attr("d", path)
+            
 
           $(".tooltip").remove();
 
