@@ -12,6 +12,7 @@
     function vis(selection){
       selection.each(function(data){
 
+
         var margin = {top: 20, right: 20, bottom: 30, left: 0},
           w = width - margin.right - margin.left,
           h = height - margin.top - margin.bottom

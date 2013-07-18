@@ -43,7 +43,7 @@
             .y(function(d) { return y(d.value); });
 
         var line = d3.svg.area()
-            .interpolate("monotone")
+            .interpolate("basis")
             .x(function(d) { return x(d.date); })
             .y0(h)
             .y1(function(d) { return y(d.value); });
