@@ -92,8 +92,6 @@
             .attr("fill",function(d){ 
               return colorScale(color(d.properties));
             })
-            .attr("data-title", function(d){return d.properties.id;})
-            .attr("data-toggle","tooltip")
             .attr("transform", function(d) {
               var x = path.centroid(d)[0],
                   y = path.centroid(d)[1];
@@ -102,13 +100,12 @@
                     + "translate(" + -x + "," + -y + ")";
             })
             .attr("d", path)
+            .popover(popover)
 
 
           // create new ones...
           feature.enter().append("path")
             .attr("class","cell")
-            .attr("data-title", function(d){ return d.properties.id;})
-            .attr("data-toggle","tooltip")
             .attr("fill",function(d){ 
               return colorScale(color(d.properties));
             })
@@ -129,23 +126,47 @@
             .each(function(d){
               d.properties.selected = false;
             })
+            .popover(popover)
 
-          $(".tooltip").remove();
+          /*$(".tooltip").remove();
 
           $(".cell").tooltip({
             'container': 'body',
             'html':'true'
-          });
+          });*/
 
           feature.exit().remove()
 
+          /* Popover */
+
+          function popover(d,i) {
+            var div;
+            div = d3.select(document.createElement("div"))
+              .style("height", "100px")
+              .style("width", "100%")
+
+            div.append("p")
+              .html(d.properties.id);
+
+            var x = path.centroid(d)[0],
+              y = path.centroid(d)[1];
+
+            return {
+              title: "Cell information (" + d.properties.id +")",
+              content: div,
+              detection: "shape",
+              placement: "mouse",
+              gravity: "left",
+              displacement: [-290, -85 ],
+              mousemove: true
+            };
+          }
 
           function updateSelected(){
-
-          feature
-            .style("fill-opacity",function(d){ 
-              return d.properties.selected ? 1 : 0.2
-            })
+            feature
+              .style("fill-opacity",function(d){ 
+                return d.properties.selected ? 1 : 0.2
+              })
           }
 
         }

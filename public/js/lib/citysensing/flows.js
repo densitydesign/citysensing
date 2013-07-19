@@ -10,19 +10,21 @@
     function vis(selection){
       selection.each(function(data){
 
-
       	data.nodes.forEach(function(d,i){
           d.name = d.id;
           d.id = i;
         })
 
       	var nodesObject = data.nodes.map(function(d){ return d.name; });
-
       	//data.links = data.links.slice(0,100)
 
         data.links.forEach(function(d){
           d.source = nodesObject.indexOf(d.source);
           d.target = nodesObject.indexOf(d.target);
+        })
+
+        data.links = data.links.filter(function(d){ 
+        	return d.source != -1 && d.target != -1;
         })
 
         var formatNumber = d3.format(",.0f"),

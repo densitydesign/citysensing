@@ -10,23 +10,48 @@ div.row-fluid
 	div.span2
 		div#panel
 
+			legend Map options
 			
 			label.checkbox
 				input(type="checkbox", ng-model="showMap")
 				span Show streets
 
-			h6 Color by
-				select.show-tick.span12(selectpicker, ng-model="color", ng-options="c.label for c in colorList")
+			// Color by
+			div.dropdown.selector
+				button.btn.dropdown-toggle(data-toggle="dropdown")
+					span.pull-left.filter-option Color by {{color.label}}
+					span.caret
+				ul.dropdown-menu(role="menu", aria-labelledBy="dLabel")
+					li(ng-repeat="c in colorList", role="presentation", class="{{color.label == c.label ? 'selected' : ''}}")
+						a(data-target="#", tabindex="-1", role="menuitem", ng-click="chooseColor(c)")
+							span {{c.label}}
+							i.icon-ok.check-mark
+			// Color legend
 			div(map-legend)
-			h6 Size by
-				select.show-tick.span12(selectpicker, ng-model="size", ng-options="c.label for c in sizeList")
+
+			// Size by
+			div.dropdown.selector
+				button.btn.dropdown-toggle(data-toggle="dropdown")
+					span.pull-left.filter-option Size by {{size.label}}
+					span.caret
+				ul.dropdown-menu(role="menu", aria-labelledBy="dLabel")
+					li(ng-repeat="c in sizeList", role="presentation", class="{{size.label == c.label ? 'selected' : ''}}")
+						a(data-target="#", tabindex="-1", role="menuitem", ng-click="chooseSize(c)")
+							span {{c.label}}
+							i.icon-ok.check-mark
+			//
+				h6 Color by
+					select.show-tick.span12(selectpicker, ng-model="color", ng-options="c.label for c in colorList")
+				div(map-legend)
+				h6 Size by
+					select.show-tick.span12(selectpicker, ng-model="size", ng-options="c.label for c in sizeList")
 			
 			div(side-panel, request="{{request}}")
 
 	div#map.span10
 		div(map, grid="grid", request="request", color="color", size="size", show-map="showMap")
 
-div.row-fluid
+div#timeline.row-fluid
 	div.span12.breath
 		h2 Timeline
 		div.multiline(multiline-focus, request="{{request}}", error="{{error}}")

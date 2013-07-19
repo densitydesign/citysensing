@@ -20,7 +20,7 @@ angular.module('citySensing.directives', [])
             scope.messagesIn = data.messages_in;
             scope.messagesOut = data.messages_out;
             scope.dataTraffic = data.data_traffic;
-            scope.hashtags = data.hashtags.slice(0,20);
+            scope.hashtags = data.hashtags.slice(0,100);
             scope.$apply();
           })
           .fail(function(error){
@@ -228,12 +228,7 @@ angular.module('citySensing.directives', [])
 
         function update() {
 
-          var fake = {};
-          fake.start = scope.request.start;
-          fake.end = scope.request.end;
-          fake.cells = [3843, 6450];
-
-          apiService.getConceptFlows(fake)
+          apiService.getConceptFlows(scope.request)
             .done(function(data){
               svg
               .datum(data)

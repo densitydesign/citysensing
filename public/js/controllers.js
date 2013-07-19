@@ -25,6 +25,10 @@ angular.module('citySensing.controllers', [])
 
     $scope.color = $scope.colorList[0]
 
+    $scope.chooseColor = function(color) {
+      $scope.color = color;
+    }
+
     $scope.sizeList = [
       {
         label: "Mobile Anomaly",
@@ -38,6 +42,9 @@ angular.module('citySensing.controllers', [])
 
     $scope.size = $scope.sizeList[0]
 
+    $scope.chooseSize = function(size) {
+      $scope.size = size;
+    }
 
     gridService.getGrid($scope.gridUrl).then(
       function(data){

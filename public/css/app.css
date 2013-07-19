@@ -5,23 +5,26 @@ html {
 }
 
 h2 {
-  font-family: "Open Sans";
-  font-weight: 200;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 h6 {
   font-size: 12px;
 }
 
+label, input, button, select, textarea {
+  font-size: 13px;
+  line-height: 22px;
+}
 
 #map {
   background-color: #ffffff;
- /* -moz-box-shadow: inset 3px 0px 3px -1px #ddd;
-  -webkit-box-shadow: inset 3px 0px 3px -1px #ddd;
-  box-shadow: inset 3px 0px 3px -1px #ddd;
-  */
-  height: 600px;
+  -moz-box-shadow: inset 2px 0px 3px -1px #eee;
+  -webkit-box-shadow: inset 2px 0px 3px -1px #eee;
+  box-shadow: inset 2px 0px 3px -1px #eee;
+  
+  border-left: 1px solid #eee;
+  height: 620px;
 }
 
 #panel {
@@ -33,8 +36,9 @@ h6 {
 
 #timeline {
   background-color: #ffffff;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #eee;
   min-height: 100px;
+  padding-left: 10px;
 }
 
 #view {
@@ -47,7 +51,7 @@ h6 {
 }
 
 #header .navbar-inner {
-  background-color: #fff;
+  background-color: #f8f8f8;
   background-image: none;
    /* -moz-box-shadow: inset 3px 0px 3px -1px #ddd;
   -webkit-box-shadow: inset 3px 0px 3px -1px #ddd;
@@ -66,16 +70,20 @@ h6 {
 }
 
 .navbar-masthead .nav > li > a {
-  color: rgb(46, 185, 197);
+  color: rgb(16, 197, 168);
   text-shadow: none;
 }
 
 .navbar-masthead .nav > li > a:hover {
-  color: #444;
+  color: #666;
 }
 
 .navbar-text {
   color: #999;
+}
+
+.nav {
+  margin-bottom: 0px;
 }
 
 .btn {
@@ -107,7 +115,8 @@ legend {
   font-weight: bold;
   color: #333;
   border: none;
-  border-bottom: none;
+  margin-bottom: 5px;
+  margin-top: 10px;
 }
 
 
@@ -155,6 +164,10 @@ legend {
 path.cell {
   fill-opacity: 0.7;
   stroke-width: 0;
+}
+
+.popover {
+  width: 280px;
 }
 
 /* Timeline */
@@ -226,7 +239,7 @@ rect.bar {
 .bars ul {
     list-style-type: none;
     margin: 0px;
-    height: 200px;
+    height: 150px;
     overflow: scroll;
 }
 
@@ -236,7 +249,7 @@ rect.bar {
 }
 
 .bars .filter-item {
-  padding: 2px 8px;
+  padding: 0px 0px;
   text-decoration: none;
   color: #888;
   white-space: nowrap;
@@ -262,11 +275,25 @@ rect.bar {
   font-weight: bold;
 }
 
+#traffic {
+  height: 100%;
+  overflow: hidden;
+}
 
+#map-legend {
+  width: 100%;
+}
 
-.legend {
-  width:20px;
-  height: 20px;
+#map-legend li.legend {
+  width:20%;
+  height: 10px;
+  padding: 0px;
+  margin: 0px;
+  opacity: .8;
+}
+
+#map-legend li.legend:hover {
+  opacity: 1;
 }
 
 .social-activity {
@@ -288,4 +315,51 @@ rect.bar {
 
 div[flows] {
   text-align: center;
+}
+
+
+.loading {
+  background: url('../img/loading.gif') no-repeat center;
+  width: 20px;
+  height: 20px;
+}
+
+.selector {
+  margin-bottom: 5px;
+}
+
+.selector,
+.selector .btn,
+.selector ul {
+  width: 100%;
+}
+
+.selector .caret {
+  position: absolute;
+  right: 12px;
+}
+
+.selector li {
+  cursor: pointer;
+}
+
+.selector li a i.check-mark {
+  display: none;
+}
+
+.selector .filter-option {
+  font-size: 11px;
+  font-weight: bold;
+  color: #666;
+}
+
+.selector li.selected a i.check-mark {
+  display: block;
+}
+
+
+.table thead th {
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #666;
 }
