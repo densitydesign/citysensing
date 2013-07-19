@@ -48,14 +48,16 @@ div.row-fluid
 			
 			div(side-panel, request="{{request}}")
 
-	div#map.span10
-		div(map, grid="grid", request="request", color="color", size="size", show-map="showMap")
+	div#map-wrap.span10
+		div#map
+			div(map)
+		div(map-info, request="request")
 
 div#timeline.row-fluid
 	div.span12.breath
 		h2 Timeline
-		div.multiline(multiline-focus, request="{{request}}", error="{{error}}")
-		div.multiline(multiline-context, request="{{request}}", error="{{error}}")
+		div.multiline(multiline-focus)
+		div.multiline(multiline-context)
 		div(time-legend)
 
 
@@ -74,11 +76,11 @@ div.row-fluid
 div.row-fluid
 	div.span12.breath.tab-content
 		div.row-fluid.active.tab-pane(id="events")
-			div.span12(event-list, request="request", error="error")
+			div.span12(event-list)
 		div.row-fluid.tab-pane(id="network")
-			div.span12(network, request="{{request}}", error="{{error}}")
+			div.span12(network)
 		div.row-fluid.tab-pane(id="flows")
-			div.span12(flows, request="{{request}}", error="{{error}}")
+			div.span12(flows)
 
 script.
 	$('#myTab a').click(function (e) {

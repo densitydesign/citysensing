@@ -8,7 +8,9 @@
       height = 100,
       activities = [],
       brushing = false,
-      dispatch = d3.dispatch("brushed")
+      dispatch = d3.dispatch("brushed"),
+      startBrush,
+      endBrush;
 
     function vis(selection){
       selection.each(function(data){
@@ -73,7 +75,6 @@
           d3.max(lines, function(c) { return d3.max(c.values, function(v) { return v.value; }); })
         ]);
 
-        
 
         var activity = selection.selectAll(".activity")
           .data(lines)
@@ -96,6 +97,7 @@
               .attr("d", function(d) { return line(d.values); })
 
         selection.selectAll("g.axis").remove();
+
         selection.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + h + ")")
@@ -110,22 +112,25 @@
               else dispatch.brushed(brush.extent()); 
             });
 
-          var brushNode = selection.selectAll("g.brush")
-            .data([data])
-            .call(brush)
-          
-          brushNode.enter().append("g")
-          .attr("class", "x brush")
-            .call(brush)
-          .selectAll("rect")
-            .attr("y", -6)
-            .attr("height", h + 7)
-            .selectAll(".resize").append("path")
-              .attr("transform", "translate(0," +  height / 2 + ")")
-              .attr("d", resizePath);
+         
+          selection.selectAll("g.brush").remove();
 
+          var startExtent = startBrush || data[0].date,
+              endExtent = endBrush || data[data.length-1].date;
 
-          brushNode.exit().remove();
+          console.log(startBrush, startExtent, endExtent)
+
+          var brushNode = selection.append("g")
+            .attr("class", "x brush")
+            .call(brush.extent([startExtent, endExtent]))
+            .selectAll("rect")
+              .attr("y", -6)
+              .attr("height", h + 7)
+              //.selectAll(".resize").append("path")
+              //  .attr("transform", "translate(0," +  height / 2 + ")")
+              //  .attr("d", resizePath);
+
+          //brushNode.exit().remove();
 
         }
 
@@ -150,6 +155,17 @@
       })
     }
 
+    vis.startBrush = function(_start){
+      if (!arguments.length) return startBrush;
+      startBrush = _start;
+      return vis;
+    }
+
+    vis.endBrush = function(_end){
+      if (!arguments.length) return endBrush;
+      endBrush = _end;
+      return vis;
+    }
 
     vis.width = function(_width){
       if (!arguments.length) return width;

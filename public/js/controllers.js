@@ -31,12 +31,12 @@ angular.module('citySensing.controllers', [])
 
     $scope.sizeList = [
       {
-        label: "Mobile Anomaly",
-        value: "mobily_anomaly"
-      },
-      {
         label: "Mobile Activity",
         value: "mobily_activity"
+      },
+      {
+        label: "Mobile Anomaly",
+        value: "mobily_anomaly"
       }
     ]
 

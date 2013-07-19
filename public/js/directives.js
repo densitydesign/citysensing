@@ -40,11 +40,6 @@ angular.module('citySensing.directives', [])
     return {
       restrict: 'A',
       replace: false,
-      scope: {
-        request : '=',
-        error: '=',
-        events: '@'
-      },
       templateUrl: '../templates/eventlist.html',
       link: function postLink(scope, element, attrs) {
 
@@ -57,6 +52,12 @@ angular.module('citySensing.directives', [])
           .fail(function(error){
             scope.error = error;
           })
+        }
+
+        scope.select = function(event){
+          scope.request.cells = [event.squareID];
+          scope.request.start = event.date[0];
+          scope.request.end = event.date[1] + 86400000; // adding milliseconds to reach the end of the day
         }
 
         scope.$watch('request', function(){
@@ -72,27 +73,29 @@ angular.module('citySensing.directives', [])
 		return {
       restrict: 'A',
       replace: false,
-      scope: {
-        request: '=',
-        grid: '=',
-        color: '=',
-        size: '=',
-        showMap: '='
-      },
 
       link: function postLink(scope, element, attrs) {
 
-        var cells = [];
-        var map = citysensing.map();
+        var cells = [],
+            map = citysensing.map()
+            .on("selected", function (d) {
+              var index = scope.request.cells.indexOf(d);
+              if (index == -1) scope.request.cells.push(d);
+              else scope.request.cells.splice(index,1);
+              scope.$apply();
+            })
+            .popover(popover);
 
         function reload() {         
           apiService.getMap(scope.request)
             .done(function(data){
 
-              //dobbiamo vedere la differenza tra 
               var cellsObject = {};
               cells.forEach(function(d){ cellsObject[d.id] = d; })
-              data.cells.forEach(function(d){ cellsObject[d.id] = d; })
+              data.cells.forEach(function(d){
+                if ( cellsObject[d.id] && scope.request.cells.indexOf(d.id) != -1 )  d.selected = true;
+                cellsObject[d.id] = d;
+              })
               cells = d3.values(cellsObject);
               
               update();
@@ -103,53 +106,92 @@ angular.module('citySensing.directives', [])
         }
           
         function update() {
+
         	if (!scope.grid || !cells) return;
-
-          map
-            .grid(scope.grid)
-            .color(function(d){ return d[scope.color.value]; })
-            .size(function(d){ return d[scope.size.value]; })
-            .showMap(scope.showMap)
-            .on("selected",function(d){
-
-              var index = scope.request.cells.indexOf(d);
-              console.log(scope.request.cells)
-              if (index == -1){
-                scope.request.cells.push(d);
-              }
-              else{ 
-                scope.request.cells.splice(index,1);
-              }
-
-              scope.$apply();
-            })
-
+          
+          // update colorScale            
           if (scope.color.value == 'social_activity')
-            map.colorRange(['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381'])
-          else map.colorRange(['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641'])
+            map.colorScale(d3.scale.quantile().range(['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']).domain([ d3.min(cells, map.color()), d3.mean(cells, map.color()), d3.max(cells, map.color()) ]))
+          else 
+            map.colorScale(d3.scale.quantile().range(['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641']).domain([ d3.min(cells, map.color()), d3.mean(cells, map.color()), d3.max(cells, map.color()) ]))
+
+          // update sizeScale            
+          if (scope.size.value == 'mobily_anomaly')
+            map.sizeScale(function(d) { return d < 0 ? .1 : Math.pow(d,10) })
+          else
+            map.sizeScale(d3.scale.linear().range([0.1, 1]).domain([ d3.min(cells, map.size()), d3.max(cells, map.size()) ]));
+
 
           d3.select(element[0])
             .datum(cells)
             .call(map)
         }
 
-        scope.$watch('request.start', reload, true);
-        scope.$watch('request.end', reload, true);
+        /* Popover accessor */
+
+        function popover(d,i) {
+
+          var div;
+          div = d3.select(document.createElement("div"))
+            .style("height", "100px")
+            .style("width", "100%")
+
+          var list = div.append("dl")
+            .attr("class","dl-horizontal")
+          
+          list.append("span").attr("class","key pull-left").html("Social activity")
+          list.append("span").attr("class","value pull-right").html(d.properties.social_activity)
+          list.append("div").attr("class","clearfix")
+          list.append("span").attr("class","key pull-left").html("Social sentiment")
+          list.append("span").attr("class","value pull-right").html(d.properties.social_sentiment)
+          list.append("div").attr("class","clearfix")
+          list.append("span").attr("class","key pull-left").html("Mobile activity")
+          list.append("span").attr("class","value pull-right").html(d.properties.mobily_activity)
+          list.append("div").attr("class","clearfix")
+          list.append("span").attr("class","key pull-left").html("Mobile anomaly")
+          list.append("span").attr("class","value pull-right").html(d.properties.mobily_anomaly)
+          list.append("div").attr("class","clearfix")
+
+          div.append("span")
+            .attr("class","muted")
+            .html(function(){ return d.properties.selected ? "This cell is selected." : "Click to selected this cell."})
+
+          return {
+            title: "Cell information (" + d.properties.id +")",
+            content: div,
+            detection: "shape",
+            placement: "mouse",
+            gravity: "left",
+            displacement: [-290, -85 ],
+            mousemove: true
+          };
+
+        }
+
+        scope.$watch('request', reload, true);
+        //scope.$watch('request.end', reload, true);
+        scope.$watch('events', function(){
+          //map.popover(popover);
+        }, true);
 
         scope.$watch('color',function(){
-          scope.mapColor ="giorgio";
+          map.color(function(d){ return d[scope.color.value]; });
           update();
         }, true)
 
         scope.$watch('size',function(){
+          map.size(function(d){ return d[scope.size.value]; });
           update();
         }, true)
 
         scope.$watch('grid',function(){
-          reload();
+          if (!scope.grid) return;
+          map.grid(scope.grid);
+          update();
         },true)
 
         scope.$watch('showMap',function(){
+          map.showMap(scope.showMap)
           update();
         },true)
 
@@ -269,7 +311,7 @@ angular.module('citySensing.directives', [])
               .call(multiline)
           })
           .fail(function(error){
-            console.log(error)
+            scope.error = error.error();
           })
         }
 
@@ -346,6 +388,27 @@ angular.module('citySensing.directives', [])
         scope.$watch('request.cells', function(){
           update();
         },true)
+
+        scope.$watch('request.start', function(){
+          multiline.startBrush(new Date(scope.request.start));
+          update();
+        },true)
+
+        scope.$watch('request.end', function(){
+          multiline.endBrush(new Date(scope.request.end));
+          update();
+        },true)
+
+      }
+    };
+  }])
+
+  .directive('mapInfo', [ function () {
+    return {
+      restrict: 'A',
+      replace: false,
+      templateUrl: '../templates/mapinfo.html',
+      link: function postLink(scope, element, attrs) {
 
       }
     };

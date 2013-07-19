@@ -18,12 +18,15 @@
             scrollWheelZoom : false
         }),
         showMap = true,
-        colorRange = ['red','green'],
-        sizeRange = [0.1,1],
+        //colorRange = ['red','green'],
+        //sizeRange = [0.1,1],
+        //colorScale,
+        //sizeScale,
         baseLayers = {
           "Map": l
         },
-        dispatch = d3.dispatch("selected");
+        dispatch = d3.dispatch("selected"),
+        collection;
 
     m.addLayer(l);
 
@@ -33,12 +36,13 @@
     function map(selection){
       selection.each(function(data){
 
-        var collection = topojson.feature(grid, grid.objects.grid),
-            path = d3.geo.path().projection(project),
+        collection = topojson.feature(grid, grid.objects.grid);
+
+        var path = d3.geo.path().projection(project),
             bounds = d3.geo.bounds(collection);
 
-        var colorScale = d3.scale.quantile().range(colorRange).domain([ d3.min(data, color), d3.mean(data, color), d3.max(data, color) ]),
-          sizeScale = d3.scale.linear().range(sizeRange).domain([ d3.min(data, size), d3.max(data, size) ]);
+        //var colorScale = d3.scale.quantile().range(colorRange).domain([ d3.min(data, color), d3.mean(data, color), d3.max(data, color) ]),
+        //    sizeScale = d3.scale.linear().range(sizeRange).domain([ d3.min(data, size), d3.max(data, size) ]);
 
         // main overlay
         var svg = d3.select(m.getPanes().overlayPane).selectAll("svg")
@@ -80,12 +84,14 @@
 
           g   .attr("transform", "translate(" + -bottomLeft[0] + "," + -topRight[1] + ")");
 
-          // the cells
-          var feature = g.selectAll("path.cell")
-            .data(collection.features.filter(function(d){
+          var filtered = collection.features.filter(function(d){
               var centroid = d3.geo.centroid(d);
               return bb.contains(new L.LatLng(centroid[1], centroid[0]));
-            }));
+            });
+
+          // the cells
+          var feature = g.selectAll("path.cell")
+            .data(filtered);
 
           // update existing
           feature
@@ -100,8 +106,8 @@
                     + "translate(" + -x + "," + -y + ")";
             })
             .attr("d", path)
-            .popover(popover)
-
+            
+          feature.popover(popover)
 
           // create new ones...
           feature.enter().append("path")
@@ -118,54 +124,33 @@
                     + "translate(" + -x + "," + -y + ")";
             })
             .attr("d", path)
-            .on("click", function(d){
-              dispatch.selected(d.properties.id);
-              d.properties.selected = !d.properties.selected;
-              updateSelected();
-            })
-            .each(function(d){
-              d.properties.selected = false;
-            })
-            .popover(popover)
+            .on("click", click)
+          
+          feature.popover(popover)
 
-          /*$(".tooltip").remove();
-
-          $(".cell").tooltip({
-            'container': 'body',
-            'html':'true'
-          });*/
-
+          // remove old ones
           feature.exit().remove()
 
-          /* Popover */
+          // update colors
+          updateSelected();
+         
 
-          function popover(d,i) {
-            var div;
-            div = d3.select(document.createElement("div"))
-              .style("height", "100px")
-              .style("width", "100%")
+          /* onClick */
 
-            div.append("p")
-              .html(d.properties.id);
-
-            var x = path.centroid(d)[0],
-              y = path.centroid(d)[1];
-
-            return {
-              title: "Cell information (" + d.properties.id +")",
-              content: div,
-              detection: "shape",
-              placement: "mouse",
-              gravity: "left",
-              displacement: [-290, -85 ],
-              mousemove: true
-            };
+          function click(d) {
+            dispatch.selected(d.properties.id);
+            d.properties.selected = !d.properties.selected;
+            updateSelected();
           }
 
+
           function updateSelected(){
+            var selected = collection.features.filter(function(d){
+              return d.properties.selected === true;
+            });
             feature
               .style("fill-opacity",function(d){ 
-                return d.properties.selected ? 1 : 0.2
+                return selected.length != 0 && !d.properties.selected ? 0.2 : 1;
               })
           }
 
@@ -188,9 +173,19 @@
       return d.size;
     }
 
+    function popover(d){
+      return {};
+    }
+
     map.grid = function(x){
       if (!arguments.length) return grid;
       grid = x;
+      return map;
+    }
+
+    map.popover = function(x){
+      if (!arguments.length) return popover;
+      popover = x;
       return map;
     }
 
@@ -230,15 +225,15 @@
       return map;
     }
 
-    map.colorRange = function(x){
-      if (!arguments.length) return colorRange;
-      colorRange = x;
+    map.colorScale = function(x){
+      if (!arguments.length) return colorScale;
+      colorScale = x;
       return map;
     }
 
-    map.sizeRange = function(x){
-      if (!arguments.length) return sizeRange;
-      sizeRange = x;
+    map.sizeScale = function(x){
+      if (!arguments.length) return sizeScale;
+      sizeScale = x;
       return map;
     }
 
