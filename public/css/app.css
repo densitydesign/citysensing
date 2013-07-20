@@ -17,6 +17,10 @@ label, input, button, select, textarea {
   line-height: 22px;
 }
 
+.small {
+  font-size: 12px;
+}
+
 #map {
   background-color: #ffffff;
   height: 620px;
@@ -215,20 +219,24 @@ rect.bar {
 
 .brush .extent {
   stroke: #fff;
+  fill: #aaa;
   fill-opacity: .125;
   shape-rendering: crispEdges;
 }
 
 
+.multiline path.area {
+  fill-opacity: .08;
+}
+
 .multiline path.line {
-  fill-opacity: .05;
+  fill: none;
+  stroke-opacity: .5;
 }
 
 .resize path {
-  fill: #666;
-  fill-opacity: .8;
-  stroke: #000;
-  stroke-width: 1.5px;
+  fill: #eee;
+  stroke: #666;
 }
 
 .cell {
@@ -253,7 +261,9 @@ rect.bar {
   margin: 0 auto;
 }
 
-
+#period {
+  margin-right: 20px;
+}
 
 .bars ul {
     list-style-type: none;

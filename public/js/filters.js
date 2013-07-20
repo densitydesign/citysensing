@@ -34,4 +34,12 @@ angular.module('citySensing.filters', []).
 					date = new Date(unix);
 			return format(date);//str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 		}
+	})
+
+	.filter('toDateTime', function () {
+		return function (unix) {
+			var format = d3.time.format("%c"),
+					date = new Date(unix);
+			return format(date);//str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+		}
 	});

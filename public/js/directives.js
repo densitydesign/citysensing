@@ -84,6 +84,7 @@ angular.module('citySensing.directives', [])
               else scope.request.cells.splice(index,1);
               scope.$apply();
             })
+            //.selected(function(d){ return scope.request.cells.length != 0; })
             .popover(popover);
 
         function reload() {         

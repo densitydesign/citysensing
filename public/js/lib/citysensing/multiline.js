@@ -2,6 +2,77 @@
 
   var citysensing = window.citysensing || (window.citysensing = {});
 
+
+    var SVGMask = (function() {
+
+      function SVGMask(focus) {
+          this.focus = focus;
+          this.mask  = this.focus.append("g").attr("class","mask");
+          this.left  = this.mask.append("polygon");
+          this.right = this.mask.append("polygon");
+          this._x = null;
+          this._y = null;
+      }
+      
+      SVGMask.prototype.style = function(prop, val) {
+          this.left.style(prop, val);
+          this.right.style(prop, val);
+          return this;
+      }
+      
+      SVGMask.prototype.x = function(f) {
+          if (f == null) {
+              return this._x;
+          }
+          this._x = f;
+          return this;
+      };
+      
+      SVGMask.prototype.y = function(f) {
+          if (f == null) {
+              return this._y;
+          }
+          this._y = f;
+          return this;
+      };
+      
+      SVGMask.prototype.redraw = function() {
+          var lp, maxX, maxY, minX, minY, rp, xDomain, yDomain;
+          yDomain = this._y.domain();
+          minY = yDomain[0];
+          maxY = yDomain[1];
+          xDomain = this._x.domain();
+          minX = xDomain[0];
+          maxX = xDomain[1];
+          lp = {
+              l: this._x(minX),
+              t: this._y(minY),
+              r: this._x(this.from),
+              b: this._y(maxY)
+          };
+          rp = {
+              l: this._x(this.to),
+              t: this._y(minY),
+              r: this._x(maxX),
+              b: this._y(maxY)
+          };
+          this.left.attr("points", "" + lp.l + "," + lp.t + "  " + lp.r + "," + lp.t + "  " + lp.r + "," + lp.b + "  " + lp.l + "," + lp.b);
+          this.right.attr("points", "" + rp.l + "," + rp.t + "  " + rp.r + "," + rp.t + "  " + rp.r + "," + rp.b + "  " + rp.l + "," + rp.b);
+          return this;
+      };
+      
+      SVGMask.prototype.reveal = function(extent) {
+          this.from = extent[0];
+          this.to = extent[1];
+          this.redraw();
+          return this;
+      };
+      
+      return SVGMask;
+      
+    })();
+
+
   citysensing.multiline = function(){
 
     var width = 900,
@@ -15,12 +86,12 @@
     function vis(selection){
       selection.each(function(data){
 
-        var margin = {top: 10, right: 20, bottom: 30, left: 0},
+        var margin = {top: 10, right: 10, bottom: 30, left: 10},
           w = width - margin.right - margin.left,
           h = height - margin.top - margin.bottom
 
         var x = d3.time.scale()
-            .range([0, w]);
+            .range([margin.left, w]);
 
         var y = d3.scale.linear()
             .range([h, 0]);
@@ -39,12 +110,12 @@
           d.date = new Date(d.start);
         });
 
-        var _line = d3.svg.line()
+        var line = d3.svg.line()
             .interpolate("basis")
             .x(function(d) { return x(d.date); })
             .y(function(d) { return y(d.value); });
 
-        var line = d3.svg.area()
+        var area = d3.svg.area()
             .interpolate("basis")
             .x(function(d) { return x(d.date); })
             .y0(h)
@@ -76,25 +147,35 @@
         ]);
 
 
+        /* Areas */
+
         var activity = selection.selectAll(".activity")
           .data(lines)
 
         activity.enter().append("g")
           .attr("class", "activity");
 
+        activity.exit().remove();
+
         var path = activity.selectAll("path")
           .data(function(d){ return [d];})
-          .style("stroke", function(d) { return color(d.name); });
 
-        path.transition()
-          .attr("d", function(d) { return line(d.values); })
+        path
+          .style("fill", function(d){ return color(d.name); })
+          .style("stroke", function(d) { return color(d.name); })
+          .transition()
+          .attr("d", function(d) { return area(d.values); })
 
         path.enter().append("path")
-            .attr("class", "line")
-            .style("stroke", function(d) { return color(d.name); })
-            .style("fill", function(d){ return color(d.name); })
-            .transition()
-              .attr("d", function(d) { return line(d.values); })
+          .attr("class", "area")
+          .style("stroke", function(d) { return color(d.name); })
+          .style("fill", function(d){ return color(d.name); })
+          .transition()
+            .attr("d", function(d) { return area(d.values); })
+
+        path.exit().remove();
+
+        /* Axis */
 
         selection.selectAll("g.axis").remove();
 
@@ -103,11 +184,55 @@
             .attr("transform", "translate(0," + h + ")")
             .call(xAxis);
 
+        var startExtent = d3.max([startBrush, data[0].date]),
+            endExtent = d3.min([endBrush,data[data.length-1].date]);
+
+        /* Mask */
+
+        selection.selectAll("g.mask").remove();
+
+        var mask = new SVGMask(activity)
+          .x(x)
+          .y(y)
+          .style("fill","#fff")
+          .reveal([startExtent, endExtent])
+
         if (brushing) {
 
+          /* Lines */
+
+          var activityLines = selection.selectAll(".activity-lines")
+            .data(lines)
+
+          activityLines.enter().append("g")
+            .attr("class", "activity-lines");
+
+          activityLines.exit().remove();
+
+          var pathLines = activityLines.selectAll("path")
+            .data(function(d){ return [d];})
+
+          pathLines
+            .style("stroke", function(d) { return color(d.name); })
+            .transition()
+              .attr("d", function(d) { return line(d.values); })
+
+          pathLines.enter().append("path")
+            .attr("class", "line")
+            .style("stroke", function(d) { return color(d.name); })
+            .transition()
+              .attr("d", function(d) { return line(d.values); })
+
+          pathLines.exit().remove();
+
+          /* Brush */
+        
           var brush = d3.svg.brush()
             .x(x)
             .on("brush", function(d){
+              mask.reveal(brush.extent());
+            })
+            .on("brushend", function(d){
               if (brush.empty())  dispatch.brushed([d3.min(data, function(d){ return new Date(d.start); }), d3.max(data, function(d){ return new Date(d.end); })])
               else dispatch.brushed(brush.extent()); 
             });
@@ -115,39 +240,34 @@
          
           selection.selectAll("g.brush").remove();
 
-          var startExtent = startBrush || data[0].date,
-              endExtent = endBrush || data[data.length-1].date;
-
-          console.log(startBrush, startExtent, endExtent)
-
           var brushNode = selection.append("g")
             .attr("class", "x brush")
             .call(brush.extent([startExtent, endExtent]))
-            .selectAll("rect")
-              .attr("y", -6)
-              .attr("height", h + 7)
-              //.selectAll(".resize").append("path")
+          
+          brushNode.selectAll("rect")
+            .attr("y", -6)
+            .attr("height", h + 7)
+            
+          brushNode.selectAll(".resize").append("path")
+            .attr("d", resizePath);
               //  .attr("transform", "translate(0," +  height / 2 + ")")
-              //  .attr("d", resizePath);
+            
 
           //brushNode.exit().remove();
 
         }
 
         function resizePath(d) {
-          var e = +(d == "e"),
-              x = e ? 1 : -1,
-              y = h / 3;
-
+          var e = +(d == "e"), x = e ? 1 : -1, y = (h+7)/3;
           return "M" + (.5 * x) + "," + y
-              + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6)
-              + "V" + (2 * y - 6)
-              + "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y)
-              + "Z"
-              + "M" + (2.5 * x) + "," + (y + 8)
-              + "V" + (2 * y - 8)
-              + "M" + (4.5 * x) + "," + (y + 8)
-              + "V" + (2 * y - 8);
+            + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6)
+            + "V" + (2 * y - 6)
+            + "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y)
+            + "Z"
+            + "M" + (2.5 * x) + "," + (y + 8)
+            + "V" + (2 * y - 8)
+            + "M" + (4.5 * x) + "," + (y + 8)
+            + "V" + (2 * y - 8);
         }
 
         

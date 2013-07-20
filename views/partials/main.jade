@@ -55,7 +55,10 @@ div.row-fluid
 
 div#timeline.row-fluid
 	div.span12.breath
-		h2 Timeline
+		strong.pull-left Timeline
+		span#period.muted.small.pull-right
+			strong Period selected: 
+			span from: {{request.start | toDateTime}} to {{request.end | toDateTime}}
 		div.multiline(multiline-focus)
 		div.multiline(multiline-context)
 		div(time-legend)

@@ -145,12 +145,10 @@
 
 
           function updateSelected(){
-            var selected = collection.features.filter(function(d){
-              return d.properties.selected === true;
-            });
+            var sel = selected();
             feature
               .style("fill-opacity",function(d){ 
-                return selected.length != 0 && !d.properties.selected ? 0.2 : 1;
+                return sel && !d.properties.selected ? 0.2 : 1;
               })
           }
 
@@ -163,6 +161,13 @@
 
 
       })
+    }
+
+    function selected(d){
+      var s = collection.features.filter(function(d){
+        return d.properties.selected === true;
+      });
+      return (s.length != 0);
     }
 
     function color(d){
@@ -180,6 +185,12 @@
     map.grid = function(x){
       if (!arguments.length) return grid;
       grid = x;
+      return map;
+    }
+
+    map.selected = function(x){
+      if (!arguments.length) return selected;
+      selected = x;
       return map;
     }
 

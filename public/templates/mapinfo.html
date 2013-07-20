@@ -1,10 +1,10 @@
 <div id="map-info">
 
-	<button class="btn btn-mini btn-danger pull-left" type="button" ng-disabled="!request.cells.length" ng-click="request.cells=[]">Clear selection</button>
+	<button class="btn btn-mini btn-primary pull-left" type="button" ng-disabled="!request.cells.length" ng-click="request.cells=[]">Clear</button>
 
 	<ul class="unstyled inline muted pull-left">
 		<li><strong>Selected cells:</strong></li>
-		<li ng-show="!request.cells.length"><span>all the cells are selected</span></li>
+		<li ng-show="!request.cells.length"><span>All</span></li>
 		<li ng-repeat="cell in request.cells">{{cell}} </li>
 	</ul>
 	<div class="clearfix"></div>
