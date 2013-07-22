@@ -1,6 +1,7 @@
 /* app css stylesheet */
 body,
 html {
+  font-family: "Open Sans", Arial, sans-serif;
   margin: 0px;
 }
 
@@ -18,7 +19,7 @@ label, input, button, select, textarea {
 }
 
 .small {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 #map {
@@ -37,7 +38,7 @@ label, input, button, select, textarea {
 #map-info {
   background-color: #f8f8f8;
   border-top: 1px solid #eee;
-  padding: 8px 10px 8px 5px;
+  padding: 8px;
   font-size: 12px;
 }
 
@@ -54,10 +55,12 @@ label, input, button, select, textarea {
 }
 
 #timeline {
-  background-color: #ffffff;
+  background-color: #f8f8f8;
   border-top: 1px solid #eee;
   min-height: 100px;
-  padding-left: 10px;
+}
+
+#eventlist {
 }
 
 #view {
@@ -66,12 +69,13 @@ label, input, button, select, textarea {
 }
 
 .breath {
-  padding: 20px;
+  padding: 20px 30px;
 }
 
 #header .navbar-inner {
-  background-color: #f8f8f8;
+  background-color: rgb(66, 226, 188);
   background-image: none;
+  border: none;
    /* -moz-box-shadow: inset 3px 0px 3px -1px #ddd;
   -webkit-box-shadow: inset 3px 0px 3px -1px #ddd;
   box-shadow: inset 3px 0px 3px -1px #ddd;
@@ -89,16 +93,18 @@ label, input, button, select, textarea {
 }
 
 .navbar-masthead .nav > li > a {
-  color: rgb(46, 185, 197);
+  color: #fafafa;
   text-shadow: none;
+  font-family: "Open Sans";
 }
 
 .navbar-masthead .nav > li > a:hover {
-  color: #666;
+  color: #fff;
 }
 
 .navbar-text {
-  color: #999;
+  color: #fafafa;
+  font-family: "Open Sans";
 }
 
 .nav {
@@ -130,7 +136,8 @@ label, input, button, select, textarea {
 }
 
 legend {
-  font-size: 13px;
+  text-transform: uppercase;
+  font-size: 11px;
   font-weight: bold;
   color: #333;
   border: none;
@@ -200,15 +207,18 @@ path.cell:hover {
 }
 
 .axis line, .axis path {
-  stroke: black;
+  stroke: #aaa;
   fill: none;
   stroke-width: 1px;
   shape-rendering: crispEdges;
 }
 
 .axis text {
-  font-size: 11px;
-}cyber
+  fill: #888;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
 
 rect.bar {
   shape-rendering: crispEdges;
@@ -218,7 +228,8 @@ rect.bar {
 }
 
 .brush .extent {
-  stroke: #fff;
+  stroke: none;
+  stroke-width: 0;
   fill: #aaa;
   fill-opacity: .125;
   shape-rendering: crispEdges;
@@ -226,12 +237,21 @@ rect.bar {
 
 
 .multiline path.area {
-  fill-opacity: .08;
+  fill-opacity: 0;
+  fill: none;
+  stroke-width: 2px;
+  stroke-opacity: .6;
 }
 
 .multiline path.line {
   fill: none;
-  stroke-opacity: .5;
+    stroke-width: 2px;
+
+  stroke-opacity: .2;
+}
+
+.mask polygon {
+  fill: #f8f8f8;
 }
 
 .resize path {
@@ -262,7 +282,7 @@ rect.bar {
 }
 
 #period {
-  margin-right: 20px;
+  padding-right: 30px;
 }
 
 .bars ul {
@@ -277,15 +297,15 @@ rect.bar {
   font-size: 12px;
 }
 
-.bars .filter-item {
+.filter-item {
   padding: 0px 0px;
   text-decoration: none;
   color: #888;
   white-space: nowrap;
   text-overflow: ellipsis;
-  cursor: pointer;
   overflow: hidden;
   display: block;
+
 }
 
 .bars ul li span.bar {
@@ -297,6 +317,9 @@ rect.bar {
   bottom: 2px;
   right: 0px;
   z-index: -1;
+}
+
+.bars span {
 }
 
 .bars ul li span.count {
@@ -325,20 +348,21 @@ rect.bar {
   opacity: 1;
 }
 
+
 .social-activity {
-  background-color: #ff7f0e;
+  background-color: #F0965B;
   width:20px;
   height: 2px;
   float: left;
-  margin: 8px 10px 0px 0px;
+  margin: 10px 10px 0px 0px;
 }
 
 .mobile-anomaly{
-  background-color: #1f77b4;
+  background-color: #6CC5F0;
   width:20px;
   height: 2px;
   float: left;
-    margin: 8px 10px 0px 0px;
+  margin: 10px 10px 0px 0px;
 
 }
 
@@ -346,6 +370,10 @@ div[flows] {
   text-align: center;
 }
 
+.upper {
+  text-transform: uppercase;
+  font-weight: 600;
+}
 
 .loading {
   background: url('../img/loading.gif') no-repeat center;
@@ -394,4 +422,23 @@ dl {
   text-transform: uppercase;
   font-size: 11px;
   color: #666;
+}
+
+table {
+  font-size: 12px;
+}
+
+.marker {
+  opacity: .6;
+  cursor: pointer;
+}
+
+.marker:hover {
+  opacity: 1;
+}
+
+.popover .popover-title {
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
 }

@@ -10,7 +10,7 @@ angular.module('citySensing.controllers', [])
     // default initial start value
     $scope.star = 1365469200000;
     // default initial end value
-    $scope.end = 1366192800000;
+    $scope.end = 1366182000000;
 
     $scope.colorList = [
       {
@@ -59,7 +59,7 @@ angular.module('citySensing.controllers', [])
 
     $scope.request = {
       start: 1365469200000,
-      end: 1366192800000,
+      end: 1366182000000,
       cells: []
     }
 

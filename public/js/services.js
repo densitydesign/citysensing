@@ -3,6 +3,7 @@
 /* Services */
 
 var timelineFocus,
+	contextRequest,
 	sidePanel,
 	eventListRequest,
 	mapRequest,
@@ -73,7 +74,12 @@ angular.module('citySensing.services', [])
 
 	    getTimelineContext : function(request){
 	        
-	        return $.ajax({
+	        // aborting previous requests...
+	    	if (contextRequest && contextRequest.readyState != 4) {
+	    		contextRequest.abort();
+	    	}
+
+	    	contextRequest = $.ajax({
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
@@ -81,6 +87,8 @@ angular.module('citySensing.services', [])
 	        	contentType: 'application/json',
 	        	url: 'api/timeline/context'
 	        })
+
+	        return contextRequest;
 	    },
 
 	    getTimelineFocus : function(request){

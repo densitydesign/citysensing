@@ -55,13 +55,13 @@ div.row-fluid
 
 div#timeline.row-fluid
 	div.span12.breath
-		strong.pull-left Timeline
+		legend Timeline
+		div.multiline(multiline-focus)
+		div.multiline(multiline-context)
+		div.pull-left(time-legend)
 		span#period.muted.small.pull-right
 			strong Period selected: 
 			span from: {{request.start | toDateTime}} to {{request.end | toDateTime}}
-		div.multiline(multiline-focus)
-		div.multiline(multiline-context)
-		div(time-legend)
 
 
 div.row-fluid
@@ -76,7 +76,7 @@ div.row-fluid
 				a(href="#flows", data-toggle="tab") Flows
 
 
-div.row-fluid
+div#eventlist.row-fluid
 	div.span12.breath.tab-content
 		div.row-fluid.active.tab-pane(id="events")
 			div.span12(event-list)

@@ -86,7 +86,7 @@
     function vis(selection){
       selection.each(function(data){
 
-        var margin = {top: 10, right: 10, bottom: 30, left: 10},
+        var margin = {top: 10, right: 10, bottom: 30, left: 20},
           w = width - margin.right - margin.left,
           h = height - margin.top - margin.bottom
 
@@ -96,7 +96,7 @@
         var y = d3.scale.linear()
             .range([h, 0]);
 
-        var color = d3.scale.category10();
+        var color = d3.scale.ordinal().range(['#6CC5F0','#F0965B']) //d3.scale.category10(); 
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -164,14 +164,14 @@
           .style("fill", function(d){ return color(d.name); })
           .style("stroke", function(d) { return color(d.name); })
           .transition()
-          .attr("d", function(d) { return area(d.values); })
+          .attr("d", function(d) { return line(d.values); })
 
         path.enter().append("path")
           .attr("class", "area")
           .style("stroke", function(d) { return color(d.name); })
           .style("fill", function(d){ return color(d.name); })
           .transition()
-            .attr("d", function(d) { return area(d.values); })
+            .attr("d", function(d) { return line(d.values); })
 
         path.exit().remove();
 
@@ -194,7 +194,6 @@
         var mask = new SVGMask(activity)
           .x(x)
           .y(y)
-          .style("fill","#fff")
           .reveal([startExtent, endExtent])
 
         if (brushing) {

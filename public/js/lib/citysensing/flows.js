@@ -24,7 +24,7 @@
         })
 
         data.links = data.links.filter(function(d){ 
-        	return d.source != -1 && d.target != -1;
+					return data.nodes[d.target].group != "foursquare"; 	
         })
 
         var formatNumber = d3.format(",.0f"),

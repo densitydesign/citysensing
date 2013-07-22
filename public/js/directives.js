@@ -48,6 +48,10 @@ angular.module('citySensing.directives', [])
           .done(function(data){
             scope.events = data.events;
             scope.$apply();
+
+            $(".marker").tooltip({
+              'container' : 'body'
+            });
           })
           .fail(function(error){
             scope.error = error;
@@ -158,7 +162,7 @@ angular.module('citySensing.directives', [])
             .html(function(){ return d.properties.selected ? "This cell is selected." : "Click to selected this cell."})
 
           return {
-            title: "Cell information (" + d.properties.id +")",
+            title: "Cell " + d.properties.id,
             content: div,
             detection: "shape",
             placement: "mouse",
@@ -262,12 +266,12 @@ angular.module('citySensing.directives', [])
 
         var flows = citysensing.flows()
           .width(1000)
-          .height(2000)
+          .height(1000)
 
         var svg = d3.select(element[0])
           .append("svg")
           .attr("width", 1000)
-          .attr("height", 2000)
+          .attr("height", 1000)
 
         function update() {
 
@@ -381,7 +385,7 @@ angular.module('citySensing.directives', [])
               .call(multiline)
           })
           .fail(function(error){
-            console.log(error)
+
           })
 
         }

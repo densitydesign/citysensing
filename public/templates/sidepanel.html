@@ -4,38 +4,38 @@
 		<li>
 			<div class="filter-item">
 				<span class="count">{{callsIn|truncate}}</span>
-				Calls in
+				<span class="small upper">Calls in</span>
 			</div>
 		</li>
 		<li>
 			<div class="filter-item">
 				<span class="count">{{callsOut|truncate}}</span>
-				Calls out
+				<span class="small upper">Calls out</span>
 			</div>
 		</li>
 		<li>
 			<div class="filter-item">
 				<span class="count">{{messagesIn|truncate}}</span>
-				Messages in
+				<span class="small upper">Messages in</span>
 			</div>
 		</li>
 		<li>
 			<div class="filter-item">
 				<span class="count">{{messagesOut|truncate}}</span>
-				Messages out
+				<span class="small upper">Messages out</span>
 			</div>
 		</li>
 		<li>
 			<div class="filter-item">
 				<span class="count">{{dataTraffic|truncate}}</span>
-				Data traffic
+				<span class="small upper">Data traffic</span>
 			</div>
 		</li>
 	</ul>
 </div>
 
 <div class="bars">
-	<legend>Hashtags</legend>
+	<legend>Twitter Hashtags</legend>
 	<input type="text" ng-model="searchHashtag" placeholder="Search..." class="span12"></input>
 	<ul id="hashtags"> 
 	    <li ng-repeat="hashtag in hashtags | filter:searchHashtag | orderBy:'value':true"> 
@@ -50,6 +50,6 @@
 
 <script>
 	$('#hashtags').slimScroll({
-	    height: '170px'
+	    height: '175px'
 	});
 </script>
