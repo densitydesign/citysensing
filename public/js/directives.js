@@ -125,7 +125,7 @@ angular.module('citySensing.directives', [])
 
           // update sizeScale            
           if (scope.size.value == 'mobily_anomaly')
-            map.sizeScale(function(d) { return d < 0 ? .1 : Math.pow(d,10) })
+            map.sizeScale(function(d) { return d < 0 ? .1 : Math.pow(d, scope.anomalyExponent) })
           else
             map.sizeScale(d3.scale.linear().range([0.1, 1]).domain([ d3.min(cells, map.size()), d3.max(cells, map.size()) ]));
 
@@ -178,6 +178,8 @@ angular.module('citySensing.directives', [])
         }
 
         scope.$watch('request', reload, true);
+        scope.$watch('anomalyExponent', update, true);
+
         //scope.$watch('request.end', reload, true);
         scope.$watch('events', function(){
           //map.popover(popover);

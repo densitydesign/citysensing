@@ -55,6 +55,8 @@ angular.module('citySensing.controllers', [])
       }
     )
 
+    $scope.anomalyExponent = 10;
+
     $scope.showMap = true;
 
     $scope.request = {

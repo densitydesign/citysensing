@@ -39,6 +39,11 @@ div.row-fluid
 						a(data-target="#", tabindex="-1", role="menuitem", ng-click="chooseSize(c)")
 							span {{c.label}}
 							i.icon-ok.check-mark
+			label Anomaly exponent
+				input.span12(type="text", ng-model="anomalyExponent")
+
+			label Anomaly dimension
+				input.span12(type="text", ng-model="anomalyDimension")
 			//
 				h6 Color by
 					select.show-tick.span12(selectpicker, ng-model="color", ng-options="c.label for c in colorList")
