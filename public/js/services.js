@@ -2,14 +2,13 @@
 
 /* Services */
 
-var timelineFocus,
+var focusRequest,
 	contextRequest,
-	sidePanel,
+	sidePanelRequest,
 	eventListRequest,
 	mapRequest,
 	networkRequest,
 	flowRequest;
-
 
 angular.module('citySensing.services', [])
 	
@@ -18,19 +17,19 @@ angular.module('citySensing.services', [])
 	  return {
 	    
 	    getGrid : function(url){
-        var deferred = $q.defer();
-        $http.get(url).success(function(data){
-            deferred.resolve(data);
-        }).error(function(){
-            deferred.reject("An error occured while fetching grid");
-        });
+	        var deferred = $q.defer();
+	        $http.get(url).success(function(data){
+	            deferred.resolve(data);
+	        }).error(function(){
+	            deferred.reject("An error occured while fetching grid");
+	        });
         
-        return deferred.promise;
+        	return deferred.promise;
     	}
 	  }
 	})
 
-	.factory('apiService', function($http, $q) {
+	.factory('apiService', function($http, $q, $rootScope) {
 	  
 	  return {
 	    
@@ -39,6 +38,7 @@ angular.module('citySensing.services', [])
 	        // aborting previous requests...
 	    	if (mapRequest && mapRequest.readyState != 4) {
 	    		mapRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
 	    	}
 
 	        mapRequest = $.ajax({
@@ -47,9 +47,10 @@ angular.module('citySensing.services', [])
 	        	processData : false,
 	        	dataType : 'json',
 	        	contentType: 'application/json',
-	        	url: 'api/map'
+	        	url: 'api/map',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
 	        })
-
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
 	        return mapRequest;
 	    },
 
@@ -58,6 +59,7 @@ angular.module('citySensing.services', [])
 	        // aborting previous requests...
 	    	if (eventListRequest && eventListRequest.readyState != 4) {
 	    		eventListRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
 	    	}
 
 	        eventListRequest = $.ajax({
@@ -66,8 +68,10 @@ angular.module('citySensing.services', [])
 	        	processData : false,
 	        	dataType : 'json',
 	        	contentType: 'application/json',
-	        	url: 'api/eventlist'
+	        	url: 'api/eventlist',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
 	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
 
 	        return eventListRequest;
 	    },
@@ -77,6 +81,7 @@ angular.module('citySensing.services', [])
 	        // aborting previous requests...
 	    	if (contextRequest && contextRequest.readyState != 4) {
 	    		contextRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
 	    	}
 
 	    	contextRequest = $.ajax({
@@ -85,8 +90,10 @@ angular.module('citySensing.services', [])
 	        	processData : false,
 	        	dataType : 'json',
 	        	contentType: 'application/json',
-	        	url: 'api/timeline/context'
+	        	url: 'api/timeline/context',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
 	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
 
 	        return contextRequest;
 	    },
@@ -94,40 +101,46 @@ angular.module('citySensing.services', [])
 	    getTimelineFocus : function(request){
 	        
 	    	// aborting previous requests...
-	    	if (timelineFocus && timelineFocus.readyState != 4) {
-	    		timelineFocus.abort();
+	    	if (focusRequest && focusRequest.readyState != 4) {
+	    		focusRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
 	    	}
 
-	        timelineFocus = $.ajax({
+	        focusRequest = $.ajax({
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
 	        	dataType : 'json',
 	        	contentType: 'application/json',
-	        	url: 'api/timeline/focus'
+	        	url: 'api/timeline/focus',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
 	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
 
-	        return timelineFocus;
+	        return focusRequest;
 	        
 	    },
 
 	    getSidePanel : function(request){
 
 	        // aborting previous requests...
-	    	if (sidePanel && sidePanel.readyState != 4) {
-	    		sidePanel.abort();
+	    	if (sidePanelRequest && sidePanelRequest.readyState != 4) {
+	    		sidePanelRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
 	    	}
 
-	        sidePanel = $.ajax({
+	        sidePanelRequest = $.ajax({
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
 	        	dataType : 'json',
 	        	contentType: 'application/json',
-	        	url: 'api/sidepanel'
+	        	url: 'api/sidepanel',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
 	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
 
-	        return sidePanel;
+	        return sidePanelRequest;
 	    },
 
 	    getConceptNetwork : function(request){
@@ -135,6 +148,7 @@ angular.module('citySensing.services', [])
 	        // aborting previous requests...
 	    	if (networkRequest && networkRequest.readyState != 4) {
 	    		networkRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
 	    	}
 
 	        networkRequest = $.ajax({
@@ -143,8 +157,10 @@ angular.module('citySensing.services', [])
 	        	processData : false,
 	        	dataType : 'json',
 	        	contentType: 'application/json',
-	        	url: 'api/concept/network'
+	        	url: 'api/concept/network',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
 	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
 
 	        return networkRequest;
 	    },
@@ -154,6 +170,7 @@ angular.module('citySensing.services', [])
 	    	// aborting previous requests...
 	    	if (flowRequest && flowRequest.readyState != 4) {
 	    		flowRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
 	    	}
 
 	        flowRequest = $.ajax({
@@ -162,8 +179,10 @@ angular.module('citySensing.services', [])
 	        	processData : false,
 	        	dataType : 'json',
 	        	contentType: 'application/json',
-	        	url: 'api/concept/flows'
+	        	url: 'api/concept/flows',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
 	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
 
 	        return flowRequest;
 	        

@@ -187,12 +187,23 @@ legend {
   border-radius: 2px;
 }
 
-path.cell {
+path.back {
+  fill-opacity: 0;
+  shape-rendering: crispEdges;
+}
+
+.cell.selected path.back,
+.cell:hover path.back {
+  stroke: #777777;
+  stroke-width: 1px;
+}
+
+path.front {
   opacity: 0.7;
   stroke-width: 0;
 }
 
-path.cell:hover {
+.cell:hover path.front {
   opacity: 1;
 }
 
@@ -348,7 +359,6 @@ rect.bar {
   opacity: 1;
 }
 
-
 .social-activity {
   background-color: #F0965B;
   width:20px;
@@ -441,4 +451,23 @@ table {
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 600;
+}
+
+
+
+#spinner-container {
+  bottom: 0;
+  top: 0;
+  position: fixed;
+  z-index: 2000;
+  opacity: .7;
+  display: none;
+  right: 0;
+  left: 0;
+}
+
+#spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
 }

@@ -113,9 +113,6 @@ exports.conceptNetwork = function (req, res) {
   	},
 
   	function (error, response, body) {
-
-      console.log("network?")
-
   		if (response.statusCode == 201) {
     		res.json(JSON.parse(body));
 	  	} else res.json({'error':JSON.parse(body)});
@@ -158,7 +155,6 @@ exports.eventList = function (req, res) {
 };
 
 exports.test = function (req, res) {
-  console.log("Test")
   request(
     {
       method : 'GET',

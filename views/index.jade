@@ -1,6 +1,8 @@
 extends layout
 
 block body
+
+  div(spinner)
   
   div#header.navbar.navbar-masthead.navbar-static-top
     div.navbar-inner
@@ -21,6 +23,8 @@ block body
   script(src='js/lib/jquery-ui/jquery-ui.min.js')
   script(src='js/lib/jquery-ajaxmanager/jquery.ajaxmanager.js')
   script(src='js/lib/jquery-slimscroll/jquery.slimscroll.min.js')
+  script(src='js/lib/spin/spin.min.js')
+
   script(src='js/lib/topojson/topojson.js')
   script(src='js/lib/leaflet/leaflet.js')
   script(src='js/lib/stamen/tile.stamen.js')

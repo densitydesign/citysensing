@@ -3,7 +3,7 @@
 /* Controllers */
 
 angular.module('citySensing.controllers', [])
-  .controller('mainCtrl', function($scope, $http, gridService) {
+  .controller('mainCtrl', function($scope, $http, gridService, apiService, $rootScope) {
 
     // base grid for the map
     $scope.gridUrl = "grid/grid.json";

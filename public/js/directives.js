@@ -13,19 +13,20 @@ angular.module('citySensing.directives', [])
 
         function update(){
           apiService.getSidePanel(scope.request)
-          .done(function(data){
-            scope.hashtags = data.hashtags;
-            scope.callsIn = data.calls_in;
-            scope.callsOut = data.calls_out;
-            scope.messagesIn = data.messages_in;
-            scope.messagesOut = data.messages_out;
-            scope.dataTraffic = data.data_traffic;
-            scope.hashtags = data.hashtags.slice(0,100);
-            scope.$apply();
-          })
-          .fail(function(error){
-            scope.error = error;
-          })
+            .done(function(data){
+              
+              scope.hashtags = data.hashtags;
+              scope.callsIn = data.calls_in;
+              scope.callsOut = data.calls_out;
+              scope.messagesIn = data.messages_in;
+              scope.messagesOut = data.messages_out;
+              scope.dataTraffic = data.data_traffic;
+              scope.hashtags = data.hashtags.slice(0,100);
+              scope.$apply();
+            })
+            .fail(function(error){
+              scope.error = error;
+            })
         }
 
       	scope.$watch('request', function(){
@@ -46,6 +47,7 @@ angular.module('citySensing.directives', [])
         function update(){
           apiService.getEventList(scope.request)
           .done(function(data){
+            
             scope.events = data.events;
             scope.$apply();
 
@@ -73,7 +75,7 @@ angular.module('citySensing.directives', [])
   }])
 
   
-	.directive('map', [ 'apiService', function (apiService) {
+	.directive('map', [ 'apiService', '$rootScope', function (apiService, $rootScope) {
 		return {
       restrict: 'A',
       replace: false,
@@ -94,7 +96,7 @@ angular.module('citySensing.directives', [])
         function reload() {         
           apiService.getMap(scope.request)
             .done(function(data){
-
+              
               var cellsObject = {};
               cells.forEach(function(d){ cellsObject[d.id] = d; })
               data.cells.forEach(function(d){
@@ -111,6 +113,7 @@ angular.module('citySensing.directives', [])
         }
           
         function update() {
+
 
         	if (!scope.grid || !cells) return;
           
@@ -130,6 +133,7 @@ angular.module('citySensing.directives', [])
           d3.select(element[0])
             .datum(cells)
             .call(map)
+
         }
 
         /* Popover accessor */
@@ -159,7 +163,7 @@ angular.module('citySensing.directives', [])
 
           div.append("span")
             .attr("class","muted")
-            .html(function(){ return d.properties.selected ? "This cell is selected." : "Click to selected this cell."})
+            .html(function(){ return d.properties.selected ? "This cell is selected." : "Click to select this cell."})
 
           return {
             title: "Cell " + d.properties.id,
@@ -217,7 +221,7 @@ angular.module('citySensing.directives', [])
 
         	apiService.getConceptNetwork(scope.request)
           .done(function(data){
-
+            
             d3.select(element[0]).selectAll(".graph-container").remove();
               
             d3.select(element[0])
@@ -277,6 +281,7 @@ angular.module('citySensing.directives', [])
 
           apiService.getConceptFlows(scope.request)
             .done(function(data){
+              
               svg
               .datum(data)
               .call(flows)
@@ -311,6 +316,7 @@ angular.module('citySensing.directives', [])
         function update(){
           apiService.getTimelineFocus(scope.request)
           .done(function(data){
+
             svg
               .datum(data.steps)
               .call(multiline)
@@ -463,4 +469,27 @@ angular.module('citySensing.directives', [])
 
     }
   };
-}]);
+  }])
+
+ .directive('spinner', [ '$rootScope', function ($rootScope) {
+    return {
+      restrict: 'A',
+      replace: true,
+      template : '<div id="spinner-container"><div id="spinner"></div></div>',
+      link: function postLink(scope, element, attrs) {
+
+        var opts = {
+          width: 4, // The line thickness
+        };
+        scope.loading = 0;
+        var spinner = new Spinner(opts).spin();
+        element.find("#spinner").append(spinner.el);
+
+        $rootScope.$on("loading", function(event, data){
+          if(data === true) scope.loading++; else scope.loading--;
+          if(scope.loading > 0) element.css("display", "block");
+          else element.css("display", "none");
+        })
+      }
+    };
+  }]);

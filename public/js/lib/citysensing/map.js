@@ -89,47 +89,85 @@
               return bb.contains(new L.LatLng(centroid[1], centroid[0]));
             });
 
+
           // the cells
-          var feature = g.selectAll("path.cell")
+          var feature = g.selectAll("g.cell")
             .data(filtered);
 
           // update existing
-          feature
-            .attr("fill",function(d){ 
-              return colorScale(color(d.properties));
-            })
+          /*feature
             .attr("transform", function(d) {
               var x = path.centroid(d)[0],
                   y = path.centroid(d)[1];
               return  "translate(" + x + "," + y + ")"
                     + "scale(" + sizeScale(size(d.properties)) + ")"
                     + "translate(" + -x + "," + -y + ")";
-            })
-            .attr("d", path)
+            })*/
             
           feature.popover(popover)
 
           // create new ones...
-          feature.enter().append("path")
+          feature.enter().append("g")
             .attr("class","cell")
-            .attr("fill",function(d){ 
-              return colorScale(color(d.properties));
-            })
-            .attr("transform", function(d) {
+            /*.attr("transform", function(d) {
               var x = path.centroid(d)[0],
                   y = path.centroid(d)[1];
               
               return  "translate(" + x + "," + y + ")"
                     + "scale(" + sizeScale(size(d.properties)) + ")"
                     + "translate(" + -x + "," + -y + ")";
-            })
-            .attr("d", path)
+            })*/
             .on("click", click)
           
           feature.popover(popover)
 
           // remove old ones
           feature.exit().remove()
+
+          var fronts = feature.selectAll("path.front")
+            .data(function(d){ return [d]; })
+
+          fronts
+            .attr("fill",function(d){ 
+              return colorScale(color(d.properties));
+            })
+            .attr("transform", function(d) {
+              var x = path.centroid(d)[0],
+                  y = path.centroid(d)[1];
+              return  "translate(" + x + "," + y + ")"
+                    + "scale(" + sizeScale(size(d.properties)) + ")"
+                    + "translate(" + -x + "," + -y + ")";
+            })
+            .attr("d", path)
+
+          fronts.enter().append("path")
+            .attr("class","front")
+            .attr("fill",function(d){ 
+              return colorScale(color(d.properties));
+            })
+            .attr("transform", function(d) {
+              var x = path.centroid(d)[0],
+                  y = path.centroid(d)[1];
+              return  "translate(" + x + "," + y + ")"
+                    + "scale(" + sizeScale(size(d.properties)) + ")"
+                    + "translate(" + -x + "," + -y + ")";
+            })
+            .attr("d", path)
+
+          fronts.exit().remove()
+
+          var backs = feature.selectAll("path.back")
+            .data(function(d){ return [d]; })
+
+          backs
+            .attr("d", path)
+
+          backs.enter().append("path")
+            .attr("class","back")
+            .attr("d", path)
+
+          backs.exit().remove()
+
 
           // update colors
           updateSelected();
@@ -147,8 +185,8 @@
           function updateSelected(){
             var sel = selected();
             feature
-              .style("fill-opacity",function(d){ 
-                return sel && !d.properties.selected ? 0.2 : 1;
+              .classed("selected", function(d){ 
+                return sel && d.properties.selected;
               })
           }
 
