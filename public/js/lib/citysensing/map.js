@@ -8,6 +8,7 @@
         zoom = 13,
         minZoom = 11,
         maxZoom = 17,
+        dragging = false,
         coordinates = [45.4640, 9.1916],
         l = new L.StamenTileLayer("toner-lite"),
         m = new L.Map("map", {
@@ -68,6 +69,8 @@
 
         m.on("viewreset", drawGrid);
         m.on("moveend", drawGrid);
+        m.on("dragstart", function(){ dragging = true; })
+        m.on("dragend", function(){ dragging = false; })
 
         drawGrid();
 
@@ -117,7 +120,7 @@
                     + "scale(" + sizeScale(size(d.properties)) + ")"
                     + "translate(" + -x + "," + -y + ")";
             })*/
-            .on("click", click)
+            .on("mouseup", click)
           
           feature.popover(popover)
 
@@ -176,6 +179,7 @@
           /* onClick */
 
           function click(d) {
+            if (dragging) return;
             dispatch.selected(d.properties.id);
             d.properties.selected = !d.properties.selected;
             updateSelected();
