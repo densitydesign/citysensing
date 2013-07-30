@@ -44,11 +44,25 @@ angular.module('citySensing.directives', [])
       templateUrl: '../templates/eventlist.html',
       link: function postLink(scope, element, attrs) {
 
+        var events = [],
+          eventsPerPage = 20;
+
+        scope.maxSize = 5;
+        scope.bigNoOfPages = 18;
+        scope.bigCurrentPage = 1;
+
         function update(){
           apiService.getEventList(scope.request)
           .done(function(data){
             
-            scope.events = data.events;
+            events = data.events;
+
+            scope.bigNoOfPages = events.length % eventsPerPage > 0 ? Math.floor(events.length/ eventsPerPage) + 1 : Math.floor(events.length/ eventsPerPage);
+            scope.bigCurrentPage = 1;
+            
+            scope.events = events.slice( (scope.bigCurrentPage-1) * eventsPerPage, scope.bigCurrentPage * eventsPerPage);
+
+
             scope.$apply();
 
             $(".marker").tooltip({
@@ -58,6 +72,10 @@ angular.module('citySensing.directives', [])
           .fail(function(error){
             scope.error = error;
           })
+        }
+
+        scope.selectPage = function(page){
+          scope.events = events.slice( (page-1) * eventsPerPage, page * eventsPerPage);
         }
 
         scope.select = function(event){
@@ -304,6 +322,8 @@ angular.module('citySensing.directives', [])
       restrict: 'A',
       replace: false,
       link: function postLink(scope, element, attrs) {
+        
+        var steps = [];
 
         var svg = d3.select(element[0])
           .append("svg")
@@ -311,25 +331,76 @@ angular.module('citySensing.directives', [])
           .attr("height", 100)
 
         var multiline = citysensing.multiline()
-          .activities(["social_activity","mobily_anomaly"])
+          .colors(scope.colors)
+          .activities([ scope.color.value, scope.size.value ])
           .width(element.outerWidth())
           .height(100)
 
-        function update(){
-          apiService.getTimelineFocus(scope.request)
-          .done(function(data){
+        function reload(){
+          var fake = {};
+          fake.start = scope.star;
+          fake.end = scope.end;
+          fake.cells = scope.request.cells;
 
-            svg
-              .datum(data.steps)
-              .call(multiline)
-          })
-          .fail(function(error){
-            scope.error = error.error();
-          })
+          apiService.getTimelineFocus(fake)
+            .done(function(da){
+              var data2 = da.steps;
+              var scales = {
+                social_sentiment : {},
+                social_activity : {},
+                mobily_activity : {},
+                mobily_anomaly : {}
+              };
+
+              scales["social_sentiment"].min = d3.min(data2, function(d){ return d["social_sentiment"]})
+              scales["social_sentiment"].max = d3.max(data2, function(d){ return d["social_sentiment"]})
+              scales["social_activity"].min = d3.min(data2, function(d){ return d["social_activity"]})
+              scales["social_activity"].max = d3.max(data2, function(d){ return d["social_activity"]})
+              scales["mobily_activity"].min = d3.min(data2, function(d){ return d["mobily_activity"]})
+              scales["mobily_activity"].max = d3.max(data2, function(d){ return d["mobily_activity"]})
+              scales["mobily_anomaly"].min = d3.min(data2, function(d){ return d["mobily_anomaly"]})
+              scales["mobily_anomaly"].max = d3.max(data2, function(d){ return d["mobily_anomaly"]})
+
+              multiline.scales(scales);
+
+              apiService.getTimelineFocus(scope.request)
+                .done(function(data){
+                  steps = data.steps;
+                  update();
+                })
+            })
+
+          
+        }
+
+        function update(){
+          if (!steps || !steps.length) return;
+
+          multiline
+            .activities([ scope.color.value, scope.size.value ])
+
+          svg
+            .datum(steps)
+            .call(multiline)
+        
         }
 
         scope.$watch('request', function(){
           //parti con la chiamata api
+          reload();
+        },true)
+
+        scope.$watch('color', function(color){
+          if (!color) return;
+          update();
+        },true)
+
+        scope.$watch('size', function(size){
+          if (!size) return;
+          update();
+        },true)
+
+        scope.$watch('timeScales', function(){
           update();
         },true)
 
@@ -358,57 +429,73 @@ angular.module('citySensing.directives', [])
           .attr("height", 100)
 
         var multiline = citysensing.multiline()
-          .activities(["social_activity","mobily_anomaly"])
+          .activities([ scope.color.value, scope.size.value ])
           .brushing(true)
+          .colors(scope.colors)
           .width(element.outerWidth())
           .height(100)
           .on("brushed",function(d){
             scope.request.start = d[0].getTime();
             scope.request.end = d[1].getTime();
             scope.$apply();
-          	//window.clearInterval(interval)
-            //interval = setTimeout(function(){ updateTime(d); }, 1000);
           })
 
-        function update(){
+        function reload() {
 
           apiService.getTimelineContext(scope.request)
           .done(function(data){
             
             var stepsObject = {};
+            
             steps.forEach(function(d){ 
               var obj = d;
               obj.mobily_anomaly = 0;
               obj.social_activity = 0;
-
+              obj.mobily_activity = 0;
+              obj.social_sentiment = 0;
               stepsObject[d.start] = obj;
-
             });
+
             data.steps.forEach(function(d){ stepsObject[d.start] = d; })
-            
             steps = d3.values(stepsObject);
-
-            svg
-              .datum(steps)
-              .call(multiline)
-          })
-          .fail(function(error){
-
+            update();
           })
 
         }
 
+        function update() {
+          if (!steps || !steps.length) return;
+          multiline
+            .activities([ scope.color.value, scope.size.value ])
+
+          svg
+            .datum(steps)
+            .call(multiline)
+        }
+          
         scope.$watch('request.cells', function(){
-          update();
+          reload();
         },true)
 
-        scope.$watch('request.start', function(){
+        scope.$watch('request.start', function(n,o){
+          if (n === o) return;
           multiline.startBrush(new Date(scope.request.start));
+          reload();
+        },true)
+
+        scope.$watch('request.end', function(n, o){
+          if (n === o) return;
+          multiline.endBrush(new Date(scope.request.end));
+          reload();
+        },true)
+
+        scope.$watch('color', function(color){
+          if (!color) return;
           update();
         },true)
 
-        scope.$watch('request.end', function(){
-          multiline.endBrush(new Date(scope.request.end));
+        scope.$watch('size', function(size){
+          if (!size) return;
           update();
         },true)
 
@@ -489,8 +576,14 @@ angular.module('citySensing.directives', [])
 
         $rootScope.$on("loading", function(event, data){
           if(data === true) scope.loading++; else scope.loading--;
-          if(scope.loading > 0) element.css("display", "block");
-          else element.css("display", "none");
+          if(scope.loading > 0) {
+            element.css("display", "block");
+            spinner.spin();
+          }
+          else {
+            element.css("display", "none");
+            spinner.stop();
+          }
         })
       }
     };

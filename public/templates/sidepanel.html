@@ -1,40 +1,4 @@
 <div class="bars">
-	<legend>Mobile traffic</legend>
-	<ul id="traffic">
-		<li>
-			<div class="filter-item">
-				<span class="count">{{callsIn}}</span>
-				<span class="small upper">Calls in</span>
-			</div>
-		</li>
-		<li>
-			<div class="filter-item">
-				<span class="count">{{callsOut}}</span>
-				<span class="small upper">Calls out</span>
-			</div>
-		</li>
-		<li>
-			<div class="filter-item">
-				<span class="count">{{messagesIn}}</span>
-				<span class="small upper">Messages in</span>
-			</div>
-		</li>
-		<li>
-			<div class="filter-item">
-				<span class="count">{{messagesOut}}</span>
-				<span class="small upper">Messages out</span>
-			</div>
-		</li>
-		<li>
-			<div class="filter-item">
-				<span class="count">{{dataTraffic}}</span>
-				<span class="small upper">Data traffic</span>
-			</div>
-		</li>
-	</ul>
-</div>
-
-<div class="bars">
 	<legend>Twitter Hashtags</legend>
 	<input type="text" ng-model="searchHashtag" placeholder="Search..." class="span12"></input>
 	<ul id="hashtags"> 
@@ -46,6 +10,42 @@
           	</div>
 	    </li> 
   	</ul> 
+</div>
+
+<div class="bars">
+	<legend>Mobile traffic</legend>
+	<ul id="traffic">
+		<li>
+			<div class="filter-item">
+				<span class="count">{{callsIn}}</span>
+				<span class="">Calls in</span>
+			</div>
+		</li>
+		<li>
+			<div class="filter-item">
+				<span class="count">{{callsOut}}</span>
+				<span class="">Calls out</span>
+			</div>
+		</li>
+		<li>
+			<div class="filter-item">
+				<span class="count">{{messagesIn}}</span>
+				<span class="">Messages in</span>
+			</div>
+		</li>
+		<li>
+			<div class="filter-item">
+				<span class="count">{{messagesOut}}</span>
+				<span class="">Messages out</span>
+			</div>
+		</li>
+		<li>
+			<div class="filter-item">
+				<span class="count">{{dataTraffic}}</span>
+				<span class="">Data traffic</span>
+			</div>
+		</li>
+	</ul>
 </div>
 
 <script>

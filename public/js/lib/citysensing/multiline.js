@@ -81,7 +81,9 @@
       brushing = false,
       dispatch = d3.dispatch("brushed"),
       startBrush,
-      endBrush;
+      endBrush,
+      colors,
+      scales;
 
     function vis(selection){
       selection.each(function(data){
@@ -94,9 +96,10 @@
             .range([margin.left, w]);
 
         var y = d3.scale.linear()
+            .domain([0,1])
             .range([h, 0]);
 
-        var color = d3.scale.ordinal().range(['#6CC5F0','#F0965B']) //d3.scale.category10(); 
+        var color = function(d){ return colors[d]; };//d3.scale.ordinal().range(['#6CC5F0','#F0965B']) //d3.scale.category10(); 
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -121,15 +124,22 @@
             .y0(h)
             .y1(function(d) { return y(d.value); });
 
-        color.domain(d3.keys(data[0]).filter(function(key) { return activities.indexOf(key) != -1; }));
+        //color.domain(d3.keys(data[0]).filter(function(key) { return activities.indexOf(key) != -1; }));
 
-        var lines = color.domain().map(function(name) {
+        var lines = activities.map(function(name) {
+          if (!scales) scales = {};
+          if (scales[name]) {
+            var min = scales[name].min,
+                max = scales[name].max;
+          } else {
+            scales[name] = {};
+            var min = scales[name].min = d3.min(data, function(d){ return d[name]; }),
+                max = scales[name].max = d3.max(data, function(d){ return d[name]; });
+          }
 
-          // normalizing...
-          var scale = d3.scale.linear().range([0,1]).domain([
-            d3.min(data, function(d){ return d[name]; }),
-            d3.max(data, function(d){ return d[name]; })
-            ])
+          console.log(data.length, name, min, max)
+
+          var scale = d3.scale.linear().range([0,1]).domain([min, max])
 
           return {
             name: name,
@@ -141,10 +151,10 @@
 
         x.domain(d3.extent(data, function(d) { return d.date; }));
 
-        y.domain([
-          d3.min(lines, function(c) { return d3.min(c.values, function(v) { return v.value; }); }),
-          d3.max(lines, function(c) { return d3.max(c.values, function(v) { return v.value; }); })
-        ]);
+       /* y.domain([
+          0,//d3.min(lines, function(c) { return d3.min(c.values, function(v) { return v.value; }); }),
+          1//d3.max(lines, function(c) { return d3.max(c.values, function(v) { return v.value; }); })
+        ]);*/
 
 
         /* Areas */
@@ -307,6 +317,18 @@
     vis.brushing = function(_brushing){
       if (!arguments.length) return brushing;
       brushing = _brushing;
+      return vis;
+    }
+
+    vis.scales = function(_scales){
+      if (!arguments.length) return scales;
+      scales = _scales;
+      return vis;
+    }
+
+    vis.colors = function(_colors){
+      if (!arguments.length) return colors;
+      colors = _colors;
       return vis;
     }
 

@@ -45,7 +45,7 @@ angular.module('citySensing.services', [])
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
-	        	dataType : 'json',
+	        //	dataType : 'json',
 	        	contentType: 'application/json',
 	        	url: 'api/map',
 	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
@@ -66,7 +66,7 @@ angular.module('citySensing.services', [])
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
-	        	dataType : 'json',
+	        //	dataType : 'json',
 	        	contentType: 'application/json',
 	        	url: 'api/eventlist',
 	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
@@ -88,7 +88,7 @@ angular.module('citySensing.services', [])
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
-	        	dataType : 'json',
+	        //	dataType : 'json',
 	        	contentType: 'application/json',
 	        	url: 'api/timeline/context',
 	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
@@ -110,7 +110,7 @@ angular.module('citySensing.services', [])
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
-	        	dataType : 'json',
+	        //	dataType : 'json',
 	        	contentType: 'application/json',
 	        	url: 'api/timeline/focus',
 	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
@@ -133,7 +133,7 @@ angular.module('citySensing.services', [])
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
-	        	dataType : 'json',
+	        //	dataType : 'json',
 	        	contentType: 'application/json',
 	        	url: 'api/sidepanel',
 	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
@@ -155,7 +155,7 @@ angular.module('citySensing.services', [])
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
-	        	dataType : 'json',
+	        //	dataType : 'json',
 	        	contentType: 'application/json',
 	        	url: 'api/concept/network',
 	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
@@ -177,7 +177,7 @@ angular.module('citySensing.services', [])
 	        	type : 'POST',
 	        	data : JSON.stringify(request),
 	        	processData : false,
-	        	dataType : 'json',
+	        //	dataType : 'json',
 	        	contentType: 'application/json',
 	        	url: 'api/concept/flows',
 	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }

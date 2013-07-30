@@ -1,5 +1,7 @@
 <input type="text" ng-model="searchEvent" placeholder="Search..." class="span2"></input>
 <p ng-show="!events.length">Sorry, no events found for the current selection.</p>
+<pagination num-pages="bigNoOfPages" current-page="bigCurrentPage" max-size="maxSize" class="pagination-mini text-center" boundary-links="true" on-select-page="selectPage(page)"></pagination>
+
 <table class="table table-striped" ng-show="events.length">
 	<thead>
 		<tr>
@@ -8,7 +10,7 @@
 			<th>Address</th>
 			<th>Start</th>
 			<th>End</th>
-			<th>Foursquare categories</th>
+			<th>4S categories</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -22,3 +24,5 @@
 		</tr>
 	</tbody>
 </table>
+
+<pagination num-pages="bigNoOfPages" current-page="bigCurrentPage" max-size="maxSize" class="pagination-mini text-center" boundary-links="true" on-select-page="selectPage(page)"></pagination>

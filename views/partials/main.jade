@@ -10,11 +10,7 @@ div.row-fluid
 	div.span2
 		div#panel
 
-			legend Map options
-			
-			label.checkbox
-				input(type="checkbox", ng-model="showMap")
-				span Show streets
+			legend Current selection
 
 			// Color by
 			div.dropdown.selector
@@ -39,56 +35,73 @@ div.row-fluid
 						a(data-target="#", tabindex="-1", role="menuitem", ng-click="chooseSize(c)")
 							span {{c.label}}
 							i.icon-ok.check-mark
+
+			div#period.muted.pull-right
+				p
+					strong Time 
+				p.small from: {{request.start | toDateTime}}
+				p.small to {{request.end | toDateTime}}
+
+			div
+				ul.unstyled.muted
+					strong cells
+					li
+					li(ng-show="!request.cells.length")<span>All</span>
+					li(ng-repeat="cell in request.cells"){{cell}}
+
+			div.row-fluid
+				button.span12.btn.btn-small.text-center(type="button", ng-click="clearSelection()") Clear selection
+
+			div(side-panel, request="{{request}}")
+
+			legend Options
+			
+			label.checkbox
+				input(type="checkbox", ng-model="showMap")
+				span Show streets on map
+
 			label Anomaly exponent
 				input.span12(type="text", ng-model="anomalyExponent")
 
 			label Anomaly dimension
 				input.span12(type="text", ng-model="anomalyDimension")
-			//
-				h6 Color by
-					select.show-tick.span12(selectpicker, ng-model="color", ng-options="c.label for c in colorList")
-				div(map-legend)
-				h6 Size by
-					select.show-tick.span12(selectpicker, ng-model="size", ng-options="c.label for c in sizeList")
+
+				
 			
-			div(side-panel, request="{{request}}")
 
 	div#map-wrap.span10
-		div#map
-			div(map)
-		div(map-info, request="request")
 
-div#timeline.row-fluid
-	div.span12.breath
-		legend Timeline
-		div.multiline(multiline-focus)
-		div.multiline(multiline-context)
-		div.pull-left(time-legend)
-		span#period.muted.small.pull-right
-			strong Period selected: 
-			span from: {{request.start | toDateTime}} to {{request.end | toDateTime}}
+		div#map.row-fluid
+			//div(map)
+		//div(map-info, request="request")
 
+	
+		div#timeline.row-fluid
+			div.span12.timeline-wrap
+				div.multiline(multiline-focus)
+				div.multiline(multiline-context)
+				div.pull-left(time-legend)
+		
+		//
+			div.row-fluid
+				div.span12.breath
 
-div.row-fluid
-	div.span12.breath
+					ul#myTab.nav.nav-tabs
+						li.active
+							a(href="#events", data-toggle="tab") Events
+						li
+							a(href="#network", data-toggle="tab") Network
+						li
+							a(href="#flows", data-toggle="tab") Flows
 
-		ul#myTab.nav.nav-tabs
-			li.active
-				a(href="#events", data-toggle="tab") Events
-			li
-				a(href="#network", data-toggle="tab") Network
-			li
-				a(href="#flows", data-toggle="tab") Flows
-
-
-div#eventlist.row-fluid
-	div.span12.breath.tab-content
-		div.row-fluid.active.tab-pane(id="events")
-			div.span12(event-list)
-		div.row-fluid.tab-pane(id="network")
-			div.span12(network)
-		div.row-fluid.tab-pane(id="flows")
-			div.span12(flows)
+			div#eventlist.row-fluid
+				div.span12.breath.tab-content
+					div.row-fluid.active.tab-pane(id="events")
+						div.span12(event-list)
+					div.row-fluid.tab-pane(id="network")
+						div.span12(network)
+					div.row-fluid.tab-pane(id="flows")
+						div.span12(flows)
 
 script.
 	$('#myTab a').click(function (e) {

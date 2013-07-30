@@ -15,7 +15,7 @@ angular.module('citySensing.controllers', [])
     $scope.colorList = [
       {
         label: "Social Sentiment",
-        value: "social_sentiment"
+        value: "social_sentiment",
       },
       {
         label: "Social Activity",
@@ -27,6 +27,13 @@ angular.module('citySensing.controllers', [])
 
     $scope.chooseColor = function(color) {
       $scope.color = color;
+    }
+
+    $scope.colors = {
+      social_sentiment : "#F0965B",
+      social_activity : "#F0965B",
+      mobily_activity : "#6CC5F0",
+      mobily_anomaly : "#6CC5F0"
     }
 
     $scope.sizeList = [
@@ -69,5 +76,12 @@ angular.module('citySensing.controllers', [])
     $scope.dismiss = function(){
       $scope.error = false;
     }
+
+    $scope.clearSelection = function(){
+      $scope.request.cells = [];
+      $scope.request.start = $scope.star;
+      $scope.request.end = $scope.end;
+    }
+
 
   })

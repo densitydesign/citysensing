@@ -94,37 +94,18 @@
             });
 
           // the cells
+          
           var feature = g.selectAll("g.cell")
             .data(filtered);
 
-          // update existing
-          /*feature
-            .attr("transform", function(d) {
-              var x = path.centroid(d)[0],
-                  y = path.centroid(d)[1];
-              return  "translate(" + x + "," + y + ")"
-                    + "scale(" + sizeScale(size(d.properties)) + ")"
-                    + "translate(" + -x + "," + -y + ")";
-            })*/
-            
           feature.popover(popover)
 
-          // create new ones...
           feature.enter().append("g")
             .attr("class","cell")
-            /*.attr("transform", function(d) {
-              var x = path.centroid(d)[0],
-                  y = path.centroid(d)[1];
-              
-              return  "translate(" + x + "," + y + ")"
-                    + "scale(" + sizeScale(size(d.properties)) + ")"
-                    + "translate(" + -x + "," + -y + ")";
-            })*/
             .on("mouseup", click)
           
           feature.popover(popover)
 
-          // remove old ones
           feature.exit().remove()
 
           var fronts = feature.selectAll("path.front")
