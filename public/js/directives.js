@@ -335,15 +335,17 @@ angular.module('citySensing.directives', [])
           .activities([ scope.color.value, scope.size.value ])
           .width(element.outerWidth())
           .height(100)
+          .on("highlight", function(d){ scope.$broadcast("highlight", d); })
 
         function reload(){
           var fake = {};
           fake.start = scope.star;
           fake.end = scope.end;
           fake.cells = scope.request.cells;
-
+          
           apiService.getTimelineFocus(fake)
             .done(function(da){
+              
               var data2 = da.steps;
               var scales = {
                 social_sentiment : {},
@@ -362,14 +364,17 @@ angular.module('citySensing.directives', [])
               scales["mobily_anomaly"].max = d3.max(data2, function(d){ return d["mobily_anomaly"]})
 
               multiline.scales(scales);
+               apiService.getTimelineFocus(scope.request)
+              .done(function(data){
+                steps = data.steps;
+                update();
+              })
 
-              apiService.getTimelineFocus(scope.request)
-                .done(function(data){
-                  steps = data.steps;
-                  update();
-                })
+              
             })
+            
 
+           
           
         }
 
@@ -417,12 +422,6 @@ angular.module('citySensing.directives', [])
       	var steps = [],
             interval;
 
-      	function updateTime(d){
-      		scope.request.start = d[0].getTime();
-          scope.request.end = d[1].getTime();
-          scope.$apply();
-      	}
-
         var svg = d3.select(element[0])
           .append("svg")
           .attr("width", element.outerWidth())
@@ -434,11 +433,8 @@ angular.module('citySensing.directives', [])
           .colors(scope.colors)
           .width(element.outerWidth())
           .height(100)
-          .on("brushed",function(d){
-            scope.request.start = d[0].getTime();
-            scope.request.end = d[1].getTime();
-            scope.$apply();
-          })
+          .on("brushed", brushed)
+          .on("highlight", function(d){ scope.$broadcast("highlight", d); })
 
         function reload() {
 
@@ -457,6 +453,7 @@ angular.module('citySensing.directives', [])
             });
 
             data.steps.forEach(function(d){ stepsObject[d.start] = d; })
+            
             steps = d3.values(stepsObject);
             update();
           })
@@ -465,12 +462,20 @@ angular.module('citySensing.directives', [])
 
         function update() {
           if (!steps || !steps.length) return;
+
           multiline
+            .scales(null)
             .activities([ scope.color.value, scope.size.value ])
 
           svg
             .datum(steps)
             .call(multiline)
+        }
+
+        function brushed(d){
+          scope.request.start = d[0].getTime();
+          scope.request.end = d[1].getTime();
+          scope.$apply();
         }
           
         scope.$watch('request.cells', function(){
@@ -545,6 +550,11 @@ angular.module('citySensing.directives', [])
  .directive('timeLegend', [ function () {
   return {
     restrict: 'A',
+    scope : {
+      color : "=",
+      size : "=",
+      timeHighlight : "="
+    },
     replace: false,
     templateUrl: '../templates/timelegend.html',
     link: function postLink(scope, element, attrs) {
@@ -554,6 +564,16 @@ angular.module('citySensing.directives', [])
         if(scope.color.value == "social_activity")
           scope.mapLegend = ['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']
         else scope.mapLegend = ['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641']
+      })
+
+      scope.$on("highlight", function(e,d){
+        
+        element.find(".highlight").html("")
+        if (!d) return;
+        for (var a in d) {
+          element.find("#"+a).html(d[a]);
+        }
+        //scope.$apply();
       })
 
     }

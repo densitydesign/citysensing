@@ -21,8 +21,8 @@ annotate = function(options, create) {
       center[0] += window.scrollX;
       center[1] += window.scrollY;
     }
-    center[0] += options.displacement[0];
-    center[1] += options.displacement[1];
+    center[0] += typeof options.displacement == 'function' ? options.displacement()[0] : options.displacement[0];
+    center[1] += typeof options.displacement == 'function' ? options.displacement()[1] : options.displacement[1];
     return selection.style("left", "" + center[0] + "px").style("top", "" + center[1] + "px").style("display", "block");
   };
   el.on("mouseover.popover", function(a,b,c) {

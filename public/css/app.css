@@ -254,6 +254,13 @@ rect.bar {
   fill-opacity: .165;
 }
 
+.multiline line.highlight {
+  stroke: #888;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 3px;
+}
+
 
 .multiline path.area {
   fill-opacity: 0;
@@ -480,4 +487,9 @@ table {
 
 [side-panel] {
   margin-bottom: 50px;
+}
+
+#selection {
+  margin-bottom: 15px;
+  padding: 0px 15px;
 }

@@ -36,22 +36,6 @@ div.row-fluid
 							span {{c.label}}
 							i.icon-ok.check-mark
 
-			div#period.muted.pull-right
-				p
-					strong Time 
-				p.small from: {{request.start | toDateTime}}
-				p.small to {{request.end | toDateTime}}
-
-			div
-				ul.unstyled.muted
-					strong cells
-					li
-					li(ng-show="!request.cells.length")<span>All</span>
-					li(ng-repeat="cell in request.cells"){{cell}}
-
-			div.row-fluid
-				button.span12.btn.btn-small.text-center(type="button", ng-click="clearSelection()") Clear selection
-
 			div(side-panel, request="{{request}}")
 
 			legend Options
@@ -72,15 +56,35 @@ div.row-fluid
 	div#map-wrap.span10
 
 		div#map.row-fluid
-			//div(map)
+			div(map)
 		//div(map-info, request="request")
 
 	
 		div#timeline.row-fluid
 			div.span12.timeline-wrap
+
+				ul#selection.unstyled
+
+					li#period.muted.pull-left
+
+						div
+							ul.unstyled.inline.muted
+								strong Cells
+								li(ng-show="!request.cells.length") All
+								li.small(ng-repeat="cell in request.cells"){{cell}}
+							p
+								strong Time 
+								span.small From {{request.start | toDateTime}} to {{request.end | toDateTime}}
+
+					li.pull-right
+						button.span12.btn.btn-small.text-center(type="button", ng-click="clearSelection()") Clear selection
+
+					li.clearfix
+
+
 				div.multiline(multiline-focus)
 				div.multiline(multiline-context)
-				div.pull-left(time-legend)
+				div.pull-left(time-legend, color="color", size="size")
 		
 		//
 			div.row-fluid
