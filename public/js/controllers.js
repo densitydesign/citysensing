@@ -62,7 +62,20 @@ angular.module('citySensing.controllers', [])
       }
     )
 
-    $scope.anomalyExponent = 10;
+    $scope.anomalyColumnName = "anomaly_index";
+
+    $scope.updateColumnName = function(){
+      if (!$scope.anomalyColumnName || $scope.anomalyColumnName == "") return;
+      $scope.request.anomalyColumnName = $scope.anomalyColumnName;
+    }
+
+    $scope.exponent = $scope.anomalyExponent = 10;
+
+    $scope.updateExponent = function(){
+      if (!$scope.exponent || $scope.exponent == "") return;
+      $scope.anomalyExponent = $scope.exponent;
+    }
+
 
     $scope.showMap = true;
 

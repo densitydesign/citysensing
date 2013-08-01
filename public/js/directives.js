@@ -593,6 +593,8 @@ angular.module('citySensing.directives', [])
           scope.request.end = d[1].getTime();
           scope.$apply();
         }
+
+        scope.$watch('request.anomalyColumnName', reload, true);
           
         scope.$watch('request.cells', function(){
           reload();

@@ -45,10 +45,14 @@ div.row-fluid
 				span Show streets on map
 
 			label Anomaly exponent
-				input.span12(type="text", ng-model="anomalyExponent")
+				div.input-append
+					input.span6(type="text", ng-model="exponent")
+					button.btn(type="button", ng-click="updateExponent()") Update
 
 			label Anomaly dimension
-				input.span12(type="text", ng-model="anomalyDimension")
+				div.input-append
+					input.span6(type="text", ng-model="anomalyColumnName")
+					button.btn(type="button", ng-click="updateColumnName()") Update
 
 
 	div#map-wrap.span10
