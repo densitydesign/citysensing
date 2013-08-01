@@ -53,71 +53,70 @@ div.row-fluid
 
 	div#map-wrap.span10
 
-		//
-			div#map.row-fluid
-				div(map)
-			//div(map-info, request="request")
-	
-		//	
-			div#timeline.row-fluid
-				div.span12.timeline-wrap
+		div#map.row-fluid
+			div(map)
+		//div(map-info, request="request")
 
-					ul#selection.unstyled
-
-						li#period.muted.pull-left
-
-							div
-								ul.unstyled.inline.muted
-									strong Cells
-									li(ng-show="!request.cells.length") All
-									li.small(ng-repeat="cell in request.cells"){{cell}}
-								p
-									strong Time 
-									span.small From {{request.start | toDateTime}} to {{request.end | toDateTime}}
-
-						li.pull-right
-							button.span12.btn.btn-small.text-center(type="button", ng-click="clearSelection()") Clear selection
-
-						li.clearfix
-
-
-					div.multiline(multiline-focus)
-					div.multiline(multiline-context)
-					div.pull-left(time-legend, color="color", size="size")
-			
 		
-			div.row-fluid
-				div.span12.breath
+		div#timeline.row-fluid
+			div.span12.timeline-wrap
 
-					ul#myTab.nav.nav-tabs
-						li.active
-							a(href="#areas", data-toggle="tab") Areas
-						li
-							a(href="#events", data-toggle="tab") Events
-						li
-							a(href="#network", data-toggle="tab") Network
-						li
-							a(href="#flows", data-toggle="tab") Flows
+				ul#selection.unstyled
 
-			div#eventlist.row-fluid
-				div.span12.breath.tab-content
-					div.row-fluid.active.tab-pane(id="areas")
-						div.span12(area-list)
-					div.row-fluid.tab-pane(id="events")
-						div.span12(event-list)
-					div.row-fluid.tab-pane(id="network")
-						div.span12(network)
-					div.row-fluid.tab-pane(id="flows")
-						div.row-fluid
-							div.span1
-								p Twitter
-							div.span2.offset4.text-center
-								p Fuorisalone.it
-							div.span1.offset4.text-center
-								p Foursquare
-						div.row-fluid
-							div.span6(flows-one)
-							div.span6(flows-two)
+					li#period.muted.pull-left
+
+						div
+							ul.unstyled.inline.muted
+								strong Cells
+								li(ng-show="!request.cells.length") All
+								li.small(ng-repeat="cell in request.cells"){{cell}}
+							p
+								strong Time 
+								span.small From {{request.start | toDateTime}} to {{request.end | toDateTime}}
+
+					li.pull-right
+						button.span12.btn.btn-small.text-center(type="button", ng-click="clearSelection()") Clear selection
+
+					li.clearfix
+
+
+				div.multiline(multiline-focus)
+				div.multiline(multiline-context)
+				div.pull-left(time-legend, color="color", size="size")
+		
+	
+		div.row-fluid
+			div.span12.breath
+
+				ul#myTab.nav.nav-tabs
+					li.active
+						a(href="#areas", data-toggle="tab") Areas
+					li
+						a(href="#events", data-toggle="tab") Events
+					li
+						a(href="#network", data-toggle="tab") Network
+					li
+						a(href="#flows", data-toggle="tab") Flows
+
+		div#eventlist.row-fluid
+			div.span12.breath.tab-content
+				div.row-fluid.active.tab-pane(id="areas")
+					div.span12(area-list)
+				div.row-fluid.tab-pane(id="events")
+					div.span12(event-list)
+				div.row-fluid.tab-pane(id="network")
+					div.span12(network)
+				div.row-fluid.tab-pane(id="flows")
+					div.row-fluid
+						div.span1
+							p Twitter
+						div.span2.offset4.text-center
+							p Fuorisalone.it
+						div.span1.offset4.text-center
+							p Foursquare
+					div.row-fluid
+						div.span6(flows-one)
+						div.span6(flows-two)
 
 script.
 	$('#myTab a').click(function (e) {
