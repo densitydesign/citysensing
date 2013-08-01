@@ -86,26 +86,39 @@ div.row-fluid
 				div.multiline(multiline-context)
 				div.pull-left(time-legend, color="color", size="size")
 		
-		//
-			div.row-fluid
-				div.span12.breath
+	
+		div.row-fluid
+			div.span12.breath
 
-					ul#myTab.nav.nav-tabs
-						li.active
-							a(href="#events", data-toggle="tab") Events
-						li
-							a(href="#network", data-toggle="tab") Network
-						li
-							a(href="#flows", data-toggle="tab") Flows
+				ul#myTab.nav.nav-tabs
+					li.active
+						a(href="#areas", data-toggle="tab") Areas
+					li
+						a(href="#events", data-toggle="tab") Events
+					li
+						a(href="#network", data-toggle="tab") Network
+					li
+						a(href="#flows", data-toggle="tab") Flows
 
-			div#eventlist.row-fluid
-				div.span12.breath.tab-content
-					div.row-fluid.active.tab-pane(id="events")
-						div.span12(event-list)
-					div.row-fluid.tab-pane(id="network")
-						div.span12(network)
-					div.row-fluid.tab-pane(id="flows")
-						div.span12(flows)
+		div#eventlist.row-fluid
+			div.span12.breath.tab-content
+				div.row-fluid.active.tab-pane(id="areas")
+					div.span12(area-list)
+				div.row-fluid.tab-pane(id="events")
+					div.span12(event-list)
+				div.row-fluid.tab-pane(id="network")
+					div.span12(network)
+				div.row-fluid.tab-pane(id="flows")
+					div.row-fluid
+						div.span1
+							p Twitter
+						div.span2.offset4.text-center
+							p Fuorisalone.it
+						div.span1.offset4.text-center
+							p Foursquare
+					div.row-fluid
+						div.span6(flows-one)
+						div.span6(flows-two)
 
 script.
 	$('#myTab a').click(function (e) {

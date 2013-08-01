@@ -10,24 +10,7 @@
     function vis(selection){
       selection.each(function(data){
 
-      	data.nodes.forEach(function(d,i){
-          d.name = d.id;
-          d.id = i;
-        })
-
-      	var nodesObject = data.nodes.map(function(d){ return d.name; });
-      	//data.links = data.links.slice(0,100)
-
-        data.links.forEach(function(d){
-          d.source = nodesObject.indexOf(d.source);
-          d.target = nodesObject.indexOf(d.target);
-        })
-
-        data.links = data.links.filter(function(d){ 
-					return data.nodes[d.target].group != "foursquare"; 	
-        })
-
-        var formatNumber = d3.format(",.0f"),
+      	var formatNumber = d3.format(",.0f"),
 			    	format = function(d) { return formatNumber(d); };
 
       	var sankey = d3.sankey()
@@ -142,6 +125,16 @@
 				}
 
 	  	});
+		}
+
+		function filter(d) {
+			return true;
+		}
+
+		vis.filter = function(_) {
+			if (!arguments.length) return filter;
+      filter = _;
+      return vis;
 		}
 
 		vis.width = function(_width){

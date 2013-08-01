@@ -15,7 +15,7 @@
 	</thead>
 	<tbody>
 		<tr ng-repeat="event in events | filter:searchEvent">
-			<td><i class="icon-map-marker marker" ng-click="select(event)" data-toggle="tooltip" title="Select"></i></td>
+			<td><i class="icon-map-marker marker" ng-click="select(event)" title="Select"></i></td>
 			<td>{{event.name}}</td>
 			<td>{{event.address | titleCase }}</td>
 			<td>{{event.date[0] | toDate }}</td>

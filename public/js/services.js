@@ -8,7 +8,8 @@ var focusRequest,
 	eventListRequest,
 	mapRequest,
 	networkRequest,
-	flowRequest;
+	flowRequest,
+	flowRequestTwo;
 
 angular.module('citySensing.services', [])
 	
@@ -186,7 +187,31 @@ angular.module('citySensing.services', [])
 
 	        return flowRequest;
 	        
+	    },
+
+	    getConceptFlowsTwo : function(request){
+
+	    	// aborting previous requests...
+	    	if (flowRequestTwo && flowRequestTwo.readyState != 4) {
+	    		flowRequestTwo.abort();
+	    		$rootScope.$broadcast("loading", false);
+	    	}
+
+	        flowRequestTwo = $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        //	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/concept/flows',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
+	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
+
+	        return flowRequestTwo;
+	        
 	    }
+
 
 	  }
 

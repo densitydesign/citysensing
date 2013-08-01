@@ -251,7 +251,7 @@ rect.bar {
 }
 
 .brush .extent:hover {
-  fill-opacity: .165;
+
 }
 
 .multiline line.highlight {
@@ -391,7 +391,8 @@ rect.bar {
 
 }
 
-div[flows] {
+div[flows-one],
+div[flows-two] {
   text-align: center;
 }
 

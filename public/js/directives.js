@@ -58,16 +58,11 @@ angular.module('citySensing.directives', [])
             events = data.events;
 
             scope.bigNoOfPages = events.length % eventsPerPage > 0 ? Math.floor(events.length/ eventsPerPage) + 1 : Math.floor(events.length/ eventsPerPage);
-            scope.bigCurrentPage = 1;
-            
+            scope.bigCurrentPage = 1;            
             scope.events = events.slice( (scope.bigCurrentPage-1) * eventsPerPage, scope.bigCurrentPage * eventsPerPage);
-
-
             scope.$apply();
 
-            $(".marker").tooltip({
-              'container' : 'body'
-            });
+            
           })
           .fail(function(error){
             scope.error = error;
@@ -87,6 +82,21 @@ angular.module('citySensing.directives', [])
         scope.$watch('request', function(){
           update();
         },true)
+
+      }
+    };
+  }])
+
+  .directive('areaList', [ function () {
+    return {
+      restrict: 'A',
+      replace: false,
+      templateUrl: '../templates/arealist.html',
+      link: function postLink(scope, element, attrs) {
+
+        scope.selectArea = function(area) {
+          scope.request.cells = area.cells;
+        }
 
       }
     };
@@ -116,7 +126,7 @@ angular.module('citySensing.directives', [])
             .done(function(data){
               
               var cellsObject = {};
-              cells.forEach(function(d){ cellsObject[d.id] = d; })
+              cells.forEach(function(d){ d.selected = false; cellsObject[d.id] = d; })
               data.cells.forEach(function(d){
                 if ( cellsObject[d.id] && scope.request.cells.indexOf(d.id) != -1 )  d.selected = true;
                 cellsObject[d.id] = d;
@@ -282,19 +292,19 @@ angular.module('citySensing.directives', [])
     };
   }])
 
-  .directive('flows', [ 'apiService', function (apiService) {
+  .directive('flowsOne', [ 'apiService', function (apiService) {
     return {
       restrict: 'A',
       replace: false,
       link: function postLink(scope, element, attrs) {
 
         var flows = citysensing.flows()
-          .width(1000)
+          .width(500)
           .height(1000)
 
         var svg = d3.select(element[0])
           .append("svg")
-          .attr("width", 1000)
+          .attr("width", 500)
           .attr("height", 1000)
 
         function update() {
@@ -302,6 +312,112 @@ angular.module('citySensing.directives', [])
           apiService.getConceptFlows(scope.request)
             .done(function(data){
               
+              data.nodes = data.nodes.filter(function(d){
+                return d.group != "foursquare";
+              });
+
+              data.nodes.forEach(function(d,i){
+                d.name = d.id;
+                d.id = i;
+              })
+
+              var nodesObject = data.nodes.map(function(d){ return d.name; });
+
+              data.links.forEach(function(d){
+                if (nodesObject.indexOf(d.target) != -1 ) {
+                  data.nodes[nodesObject.indexOf(d.target)].check = true;
+                  data.nodes[nodesObject.indexOf(d.source)].check = true;
+                }
+              })
+
+              data.nodes = data.nodes.filter(function(d){
+                return d.check == true;
+              })
+
+              nodesObject = data.nodes.map(function(d){ return d.name; });
+
+              data.links.forEach(function(d){
+                d.source = nodesObject.indexOf(d.source);
+                d.target = nodesObject.indexOf(d.target);
+              })
+
+              data.links = data.links.filter(function(d){ 
+                return d.source != -1 && d.target != -1;
+              })
+
+              svg
+              .datum(data)
+              .call(flows)
+            })
+
+        }
+
+        scope.$watch('request',function(){
+          update();
+        }, true)
+
+      }
+    };
+  }])
+
+  .directive('flowsTwo', [ 'apiService', function (apiService) {
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function postLink(scope, element, attrs) {
+
+        var flows = citysensing.flows()
+          .width(500)
+          .height(1000)
+          .filter(function(d){
+            return d.group != "hashtag";
+          })
+
+        var svg = d3.select(element[0])
+          .append("svg")
+          .attr("width", 500)
+          .attr("height", 1000)
+
+        function update() {
+
+          apiService.getConceptFlowsTwo(scope.request)
+            .done(function(data){
+              
+
+              data.nodes = data.nodes.filter(function(d){
+                return d.group != "hashtag";
+              });
+
+              data.nodes.forEach(function(d,i){
+                d.name = d.id;
+                d.id = i;
+              })
+
+              var nodesObject = data.nodes.map(function(d){ return d.name; });
+
+              data.links.forEach(function(d){
+                //if (nodesObject.indexOf(d.source) != -1 ) data.nodes[nodesObject.indexOf(d.source)].check = true;
+                if (nodesObject.indexOf(d.source) != -1 ) {
+                  data.nodes[nodesObject.indexOf(d.target)].check = true;
+                  data.nodes[nodesObject.indexOf(d.source)].check = true;
+                }
+              })
+
+              data.nodes = data.nodes.filter(function(d){
+                return d.check == true;
+              })
+
+              nodesObject = data.nodes.map(function(d){ return d.name; });
+
+              data.links.forEach(function(d){
+                d.source = nodesObject.indexOf(d.source);
+                d.target = nodesObject.indexOf(d.target);
+              })
+
+              data.links = data.links.filter(function(d){ 
+                return d.source != -1 && d.target != -1;
+              })
+
               svg
               .datum(data)
               .call(flows)
