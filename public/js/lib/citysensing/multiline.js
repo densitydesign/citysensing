@@ -83,7 +83,7 @@
       startBrush,
       endBrush,
       colors,
-      scales;
+      scales = {};
 
     function vis(selection){
       selection.each(function(data){
@@ -126,26 +126,7 @@
 
         if (!scales) scales = {};
 
-        var lines = activities.map(function(name) {
-
-          if (scales[name]) {
-            var min = scales[name].min,
-                max = scales[name].max;
-          } else {
-            scales[name] = {};
-            var min = scales[name].min = d3.min(data, function(d){ return d[name]; }),
-                max = scales[name].max = d3.max(data, function(d){ return d[name]; });
-          }
-
-          var scale = scales[name].scale = d3.scale.linear().range([0,1]).domain([min, max])
-
-          return {
-            name: name,
-            values: data.map(function(d) {
-              return { date: new Date(d.start), value: +scale(d[name]) };
-            })
-          };
-        });
+        var lines = activities.map(linesAccessor);
 
         x.domain(d3.extent(data, function(d) { return d.date; }));
 
@@ -193,22 +174,21 @@
         var startExtent = d3.max([startBrush, data[0].date]),
             endExtent = d3.min([endBrush,data[data.length-1].date]);
 
+        selection.selectAll(".highlight").remove();
 
-       /* var f = d3.scale.linear().domain([0,1]).range(scales[lines[0].name].scale.domain());
+        /* Highlight line */
 
-        var yAxis = d3.svg.axis()
-            .ticks(3)
-            .scale(f)
-            .orient("left");
+        var highlightLine =  selection.append("line")
+          .attr("class","highlight")
+          .attr("x1", margin.left)
+          .attr("x2", margin.left)
+          .attr("y1", h)
+          .attr("y2", 0)
+          .style("display", "none")
 
-        selection.selectAll("g.axis.y").remove();
-
-        selection.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate("+ margin.left + ",0)")
-            .call(yAxis);
-            
-  */
+        selection.on("mousemove.highlight", highlight);
+        selection.on("mouseover.highlight", function(){ selection.select(".highlight").style("display",""); dispatch.highlight(null);});
+        selection.on("mouseout.highlight", function(){ selection.select(".highlight").style("display","none"); dispatch.highlight(null); });
 
         /* Mask */
 
@@ -278,20 +258,6 @@
 
         }
 
-        selection.selectAll(".highlight").remove();
-
-        var highlightLine =  selection.append("line")
-          .attr("class","highlight")
-          .attr("x1", margin.left)
-          .attr("x2", margin.left)
-          .attr("y1", h)
-          .attr("y2", 0)
-          .style("display", "none")
-
-        selection.on("mousemove.highlight", highlight);
-        selection.on("mouseover.highlight", function(){ selection.select(".highlight").style("display",""); dispatch.highlight(null);});
-        selection.on("mouseout.highlight", function(){ selection.select(".highlight").style("display","none"); dispatch.highlight(null); });
-
 
         function highlight() {
 
@@ -316,7 +282,7 @@
             for (i in d.values) {
               if (d.values[i].date > t) break;
             }
-            values[d.name] = scales[d.name].scale.invert(d.values[i].value);
+            values[d.name] = scales[d.name].invert(d.values[i].value);
           })
 
           dispatch.highlight(values);
@@ -339,6 +305,10 @@
         
 
       })
+    }
+
+    function linesAccessor(name) {
+      return 0;
     }
 
     vis.startBrush = function(_start){
@@ -370,6 +340,12 @@
       activities = _activities;
       return vis;
     }
+    
+    vis.linesAccessor = function(_lines){
+      if (!arguments.length) return linesAccessor;
+      linesAccessor = _lines;
+      return vis;
+    }
 
     vis.brushing = function(_brushing){
       if (!arguments.length) return brushing;
@@ -377,9 +353,10 @@
       return vis;
     }
 
-    vis.scales = function(_scales){
+    vis.scales = function(key, value){
       if (!arguments.length) return scales;
-      scales = _scales;
+      if (arguments.length === 1) return scales[key];
+      scales[key] = value;
       return vis;
     }
 

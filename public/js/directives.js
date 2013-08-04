@@ -439,7 +439,8 @@ angular.module('citySensing.directives', [])
       replace: false,
       link: function postLink(scope, element, attrs) {
         
-        var steps = [];
+        var steps = [],
+            allData;
 
         var svg = d3.select(element[0])
           .append("svg")
@@ -449,6 +450,7 @@ angular.module('citySensing.directives', [])
         var multiline = citysensing.multiline()
           .colors(scope.colors)
           .activities([ scope.color.value, scope.size.value ])
+          .linesAccessor(lines)
           .width(element.outerWidth())
           .height(100)
           .on("highlight", function(d){ scope.$broadcast("highlight", d); })
@@ -460,43 +462,22 @@ angular.module('citySensing.directives', [])
           fake.cells = scope.request.cells;
           
           apiService.getTimelineFocus(fake)
-            .done(function(da){
+            .done(function(data){
               
-              var data2 = da.steps;
-              var scales = {
-                social_sentiment : {},
-                social_activity : {},
-                mobily_activity : {},
-                mobily_anomaly : {}
-              };
+              allData = data.steps; 
 
-              scales["social_sentiment"].min = d3.min(data2, function(d){ return d["social_sentiment"]})
-              scales["social_sentiment"].max = d3.max(data2, function(d){ return d["social_sentiment"]})
-              scales["social_activity"].min = d3.min(data2, function(d){ return d["social_activity"]})
-              scales["social_activity"].max = d3.max(data2, function(d){ return d["social_activity"]})
-              scales["mobily_activity"].min = d3.min(data2, function(d){ return d["mobily_activity"]})
-              scales["mobily_activity"].max = d3.max(data2, function(d){ return d["mobily_activity"]})
-              scales["mobily_anomaly"].min = d3.min(data2, function(d){ return d["mobily_anomaly"]})
-              scales["mobily_anomaly"].max = d3.max(data2, function(d){ return d["mobily_anomaly"]})
-
-              multiline.scales(scales);
-               apiService.getTimelineFocus(scope.request)
-              .done(function(data){
-                steps = data.steps;
-                update();
-              })
-
+              apiService.getTimelineFocus(scope.request)
+                .done(function(data){
+                  steps = data.steps;
+                  update();
+                })
               
             })
             
-
-           
-          
         }
 
         function update(){
           if (!steps || !steps.length) return;
-
           multiline
             .activities([ scope.color.value, scope.size.value ])
 
@@ -505,6 +486,41 @@ angular.module('citySensing.directives', [])
             .call(multiline)
         
         }
+
+        function anomalyValue(d) {
+          return d < 0 ? 0 : Math.pow(d, scope.anomalyExponent);
+        }
+
+        function lines(name) {
+
+          if (name == 'mobily_anomaly') {
+
+            var scale = d3.scale.linear().range([0,1]).domain([ -1, 1])
+            multiline.scales(name,scale)
+
+            return {
+              name: name,
+              values: steps.map(function(d) {
+                return { date: new Date(d.start), value: +scale(anomalyValue(d[name])) };
+              })
+            };
+          }
+
+          var min = d3.min(allData, function(d){ return d[name]; }),
+              max = d3.max(allData, function(d){ return d[name]; }),
+              scale = d3.scale.linear().range([0,1]).domain([min, max])
+              multiline.scales(name,scale)
+
+          return {
+            name: name,
+            values: steps.map(function(d) {
+              return { date: new Date(d.start), value: +scale(d[name]) };
+            })
+          };
+        
+        }
+
+        scope.$watch('anomalyExponent', update, true);
 
         scope.$watch('request', function(){
           //parti con la chiamata api
@@ -536,6 +552,7 @@ angular.module('citySensing.directives', [])
       link: function postLink(scope, element, attrs) {
 
       	var steps = [],
+            scales = {},
             interval;
 
         var svg = d3.select(element[0])
@@ -545,6 +562,7 @@ angular.module('citySensing.directives', [])
 
         var multiline = citysensing.multiline()
           .activities([ scope.color.value, scope.size.value ])
+          .linesAccessor(lines)
           .brushing(true)
           .colors(scope.colors)
           .width(element.outerWidth())
@@ -571,6 +589,9 @@ angular.module('citySensing.directives', [])
             data.steps.forEach(function(d){ stepsObject[d.start] = d; })
             
             steps = d3.values(stepsObject);
+
+            steps.forEach(function(d){ d.old_mobily_anomaly = d.mobily_anomaly });
+
             update();
           })
 
@@ -580,12 +601,44 @@ angular.module('citySensing.directives', [])
           if (!steps || !steps.length) return;
 
           multiline
-            .scales(null)
             .activities([ scope.color.value, scope.size.value ])
 
           svg
             .datum(steps)
             .call(multiline)
+        }
+
+        function anomalyValue(d) {
+          return d < 0 ? 0 : Math.pow(d, scope.anomalyExponent);
+        }
+
+        function lines(name) {
+
+          if (name == 'mobily_anomaly') {
+
+            var scale = d3.scale.linear().range([0,1]).domain([ -1, 1]);
+            multiline.scales(name,scale)
+
+            return {
+              name: name,
+              values: steps.map(function(d) {
+                return { date: new Date(d.start), value: +scale(anomalyValue(d[name])) };
+              })
+            };
+          }
+
+          var min = d3.min(steps, function(d){ return d[name]; }),
+              max = d3.max(steps, function(d){ return d[name]; }),
+              scale = d3.scale.linear().range([0,1]).domain([min, max]);
+              multiline.scales(name,scale)
+
+          return {
+            name: name,
+            values: steps.map(function(d) {
+              return { date: new Date(d.start), value: +scale(d[name]) };
+            })
+          };
+        
         }
 
         function brushed(d){
@@ -595,6 +648,7 @@ angular.module('citySensing.directives', [])
         }
 
         scope.$watch('request.anomalyColumnName', reload, true);
+        scope.$watch('anomalyExponent', update, true);
           
         scope.$watch('request.cells', function(){
           reload();
