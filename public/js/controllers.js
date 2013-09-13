@@ -65,7 +65,10 @@ angular.module('citySensing.controllers', [])
     $scope.anomalyColumnName = "anomaly_index";
 
     $scope.updateColumnName = function(){
-      if (!$scope.anomalyColumnName || $scope.anomalyColumnName == "") return;
+      if (!$scope.anomalyColumnName || $scope.anomalyColumnName == ""){
+        delete $scope.request.anomalyColumnName;
+        return;
+      }
       $scope.request.anomalyColumnName = $scope.anomalyColumnName;
     }
 
