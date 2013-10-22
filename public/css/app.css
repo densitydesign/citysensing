@@ -181,9 +181,6 @@ legend {
   border-bottom: none;
 }
 
-.leaflet-tile-pane {
-  opacity: .3;
-}
 
 .leaflet-bar {
   box-shadow: none;

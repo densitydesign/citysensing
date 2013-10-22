@@ -77,17 +77,15 @@ div.row-fluid
 							p
 								strong Time 
 								span.small From {{request.start | toDateTime}} to {{request.end | toDateTime}}
-
-					li.pull-right
-						button.span12.btn.btn-small.text-center(type="button", ng-click="clearSelection()") Clear selection
-
+					
 					li.clearfix
 
 
 				div.multiline(multiline-focus)
 				div.multiline(multiline-context)
 				div.pull-left(time-legend, color="color", size="size")
-		
+				button.btn.btn-small.text-center.pull-right(type="button", ng-click="clearSelection()") Clear selection
+				button.btn.btn-small.text-center.pull-right(type="button", ng-click="request.start = brushStart; request.end = brushEnd;") Update
 	
 		div.row-fluid
 			div.span12.breath

@@ -122,7 +122,12 @@ angular.module('citySensing.directives', [])
             .popover(popover);
 
         function reload() {         
-          apiService.getMap(scope.request)
+          var fakeRequest = {};
+          fakeRequest.cells = [];
+          fakeRequest.start = scope.request.start;
+          fakeRequest.end = scope.request.end;
+          //console.log(scope.request, fakeRequest)
+          apiService.getMap(fakeRequest)
             .done(function(data){
               
               var cellsObject = {};
@@ -642,9 +647,9 @@ angular.module('citySensing.directives', [])
         }
 
         function brushed(d){
-          scope.request.start = d[0].getTime();
-          scope.request.end = d[1].getTime();
-          scope.$apply();
+          scope.brushStart = d[0].getTime();
+          scope.brushEnd = d[1].getTime();
+          //scope.$apply();
         }
 
         scope.$watch('request.anomalyColumnName', reload, true);
