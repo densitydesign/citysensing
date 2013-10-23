@@ -44,10 +44,8 @@
               
               this.options.features['features'].forEach(function(d,i){
                   
-                  //if (i > 100) return;
-                  //console.log(d.properties.selected);
+
                   context.save();
-                  context.globalAlpha = 0.8;
                   context.fillStyle = colorScale(color(d.properties));
                   var x = path.centroid(d)[0]
                   var y = path.centroid(d)[1]
@@ -80,6 +78,7 @@
         }
 
         l.setOpacity(0.3)
+        gridLayer.setOpacity(0.8)
         m.addLayer(l).addLayer(gridLayer);
 
 

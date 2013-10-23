@@ -17,6 +17,7 @@ L.CanvasLayer = L.Class.extend({
       opacity: 1,
       unloadInvisibleTiles: L.Browser.mobile,
       updateWhenIdle: L.Browser.mobile,
+      oldPoint: new L.Point(0,0),
       tileLoader: false // installs tile loading events
   },
 
@@ -37,13 +38,23 @@ L.CanvasLayer = L.Class.extend({
     this._staticPane = map._createPane('leaflet-tile-pane', map._container);
     this._staticPane.appendChild(this._canvas);
 
-    //map.on({
-    //  'viewreset': this._reset
-    //}, this);
+    this._oldPoint = L.DomUtil.getPosition(map.getPanes().mapPane);
+    var setPosition = function(){
+      
+      var point = L.DomUtil.getPosition(map.getPanes().mapPane).subtract(this._oldPoint);
+      L.DomUtil.setPosition(this._staticPane, point);
+ 
+    }
 
    map.on({
       'moveend': this._reset
     }, this);
+
+   map.on({
+      'move': setPosition
+    }, this);  
+
+    map.on('zoomanim', this._animateZoom, this);
 
     if(this.options.tileLoader) {
       this._initTileLoader();
@@ -89,11 +100,15 @@ L.CanvasLayer = L.Class.extend({
 
   _reset: function () {
 
+    this._oldPoint = L.DomUtil.getPosition(this._map.getPanes().mapPane);
+    
     var size = this._map.getSize();
     this._canvas.width = size.x;
     this._canvas.height = size.y;
+    L.DomUtil.setPosition(this._staticPane, new L.Point(0,0));
     this.onResize();
     this._render();
+
   },
 
   /*
@@ -102,8 +117,15 @@ L.CanvasLayer = L.Class.extend({
     return [point.x, point.y];
   },
   */
+  _oldPoint: function(oldPoint){
+    this.options.oldPoint = oldPoint;
+    return this;
+  },
 
-  _updateOpacity: function () { },
+  _updateOpacity: function () { 
+
+    L.DomUtil.setOpacity(this._canvas, this.options.opacity)
+  },
 
   _render: function() {
     //if (this._map._panTransition && this._map._panTransition._inProgress) { return; }
@@ -120,6 +142,13 @@ L.CanvasLayer = L.Class.extend({
 
   render: function() {
     throw new Error('render function should be implemented');
+  },
+ _animateZoom: function (e) {
+        var map = this._map,
+            scale = map.getZoomScale(e.zoom),
+            point = L.DomUtil.getPosition(map.getPanes().mapPane).subtract(this._oldPoint);
+
+        this._staticPane.style[L.DomUtil.TRANSFORM] = L.DomUtil.getScaleString(scale, point);
   }
 
 });
