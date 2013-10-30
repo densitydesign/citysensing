@@ -685,6 +685,50 @@ angular.module('citySensing.directives', [])
     };
   }])
 
+  .directive('inout', [ 'apiService', function (apiService) {
+    return {
+      restrict: 'A',
+      replace: false,
+      templateUrl: '../templates/inout.html',
+      link: function postLink(scope, element, attrs) {
+
+        function update(){
+          var fakeRequest = {};
+          fakeRequest.cells = scope.areas[0].cells;
+          fakeRequest.start = scope.request.start;
+          fakeRequest.end = scope.request.end;
+          apiService.getInOut(fakeRequest)
+            .done(function(data){
+
+              var callsList = []
+              d3.keys(data).forEach(function(d){
+                var list = data[d];
+
+                list.forEach(function(f){
+                  f.type = d;
+                  f.count = Math.round(f.count)
+                  if(f.type == 'internationalContantactsIn' || f.type == 'internationalContantactsOut'){
+                    f.countryCode = scope.toCountryName(f.countryCode)
+                  }
+                  callsList.push(f)
+                })
+              })
+              scope.inout = callsList;
+              scope.$apply();
+            })
+            .fail(function(error){
+              scope.error = error;
+            })
+        }
+
+        scope.$watch('request', function(){
+          update();
+        },true)
+
+      }
+    };
+  }])
+
   .directive('mapInfo', [ function () {
     return {
       restrict: 'A',

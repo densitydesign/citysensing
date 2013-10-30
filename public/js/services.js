@@ -9,7 +9,8 @@ var focusRequest,
 	mapRequest,
 	networkRequest,
 	flowRequest,
-	flowRequestTwo;
+	flowRequestTwo,
+	inOutRequest;
 
 angular.module('citySensing.services', [])
 	
@@ -75,6 +76,28 @@ angular.module('citySensing.services', [])
 	        .done(function(){ $rootScope.$broadcast("loading", false); })
 
 	        return eventListRequest;
+	    },
+
+	    getInOut : function(request){
+	        
+	        // aborting previous requests...
+	    	if (inOutRequest && inOutRequest.readyState != 4) {
+	    		inOutRequest.abort();
+	    		$rootScope.$broadcast("loading", false);
+	    	}
+
+	        inOutRequest = $.ajax({
+	        	type : 'POST',
+	        	data : JSON.stringify(request),
+	        	processData : false,
+	        	dataType : 'json',
+	        	contentType: 'application/json',
+	        	url: 'api/inout',
+	        	beforeSend: function(){ $rootScope.$broadcast("loading", true); }
+	        })
+	        .done(function(){ $rootScope.$broadcast("loading", false); })
+
+	        return inOutRequest;
 	    },
 
 	    getTimelineContext : function(request){

@@ -99,6 +99,8 @@ div.row-fluid
 						a(href="#network", data-toggle="tab") Network
 					li
 						a(href="#flows", data-toggle="tab") Flows
+					li
+						a(href="#inout", data-toggle="tab") In Out
 
 		div#eventlist.row-fluid
 			div.span12.breath.tab-content
@@ -119,6 +121,8 @@ div.row-fluid
 					div.row-fluid
 						div.span6(flows-one)
 						div.span6(flows-two)
+				div.row-fluid.tab-pane(id="inout")
+					div.span12(inout)
 
 script.
 	$('#myTab a').click(function (e) {
