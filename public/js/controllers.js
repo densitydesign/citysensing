@@ -12,6 +12,8 @@ angular.module('citySensing.controllers', [])
     // default initial end value
     $scope.end = 1366182000000;
 
+    $scope.threshold = {"value" : 50};
+
     $scope.colorList = [
       {
         label: "Social Sentiment",
@@ -20,6 +22,14 @@ angular.module('citySensing.controllers', [])
       {
         label: "Social Activity",
         value: "social_activity"
+      },
+      {
+        label: "Mobile Activity",
+        value: "mobily_activity"
+      },
+      {
+        label: "Mobile Anomaly",
+        value: "mobily_anomaly"
       }
     ]
 
@@ -31,9 +41,9 @@ angular.module('citySensing.controllers', [])
 
     $scope.colors = {
       social_sentiment : "#F0965B",
-      social_activity : "#F0965B",
-      mobily_activity : "#6CC5F0",
-      mobily_anomaly : "#6CC5F0"
+      social_activity : "#F8C4A3",
+      mobily_activity : "#87bbdc",
+      mobily_anomaly : "#236fa6"
     }
 
     $scope.sizeList = [
@@ -44,6 +54,14 @@ angular.module('citySensing.controllers', [])
       {
         label: "Mobile Anomaly",
         value: "mobily_anomaly"
+      },
+      {
+        label: "Social Sentiment",
+        value: "social_sentiment",
+      },
+      {
+        label: "Social Activity",
+        value: "social_activity"
       }
     ]
 

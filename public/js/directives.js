@@ -151,10 +151,10 @@ angular.module('citySensing.directives', [])
         	if (!scope.grid || !cells) return;
           
           // update colorScale            
-          if (scope.color.value == 'social_activity')
-            map.colorScale(d3.scale.quantile().range(['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']).domain([ d3.min(cells, map.color()), d3.mean(cells, map.color()), d3.max(cells, map.color()) ]))
-          else 
+          if (scope.color.value == 'social_sentiment')
             map.colorScale(d3.scale.quantile().range(['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641']).domain([ d3.min(cells, map.color()), d3.mean(cells, map.color()), d3.max(cells, map.color()) ]))
+          else 
+            map.colorScale(d3.scale.quantile().range(['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']).domain([ d3.min(cells, map.color()), d3.mean(cells, map.color()), d3.max(cells, map.color()) ]))
 
           // update sizeScale            
           if (scope.size.value == 'mobily_anomaly')
@@ -254,28 +254,41 @@ angular.module('citySensing.directives', [])
 
         function update() {
 
-        	apiService.getConceptNetwork(scope.request)
+          var network_request = scope.request;
+          network_request.threshold = scope.threshold.value;
+
+        	apiService.getConceptNetwork(network_request)
           .done(function(data){
-            
-            d3.select(element[0]).selectAll(".graph-container").remove();
+
+            //check if there are few nodes and relaunch query with different threshold
+            if (data.nodes.length < 10 && scope.threshold.value > 5){
+              scope.threshold.value = 5;
+              update()
+
+            } 
+            else {
+              scope.threshold.value = 50; //reset threshold for next query
+
+              d3.select(element[0]).selectAll(".graph-container").remove();
+                
+              d3.select(element[0])
+                .append("div")
+                  .attr("class","graph-container")
+                  .style("width","1000px")
+                  .style("height","800px")
               
-            d3.select(element[0])
-              .append("div")
-                .attr("class","graph-container")
-                .style("width","1000px")
-                .style("height","800px")
-            
-            // trick for sigma start
-            $(d3.select(element[0]).node()).parent().css("display","block")
+              // trick for sigma start
+              $(d3.select(element[0]).node()).parent().css("display","block")
 
-            d3.select(element[0])
-              .selectAll(".graph-container")
-                .datum(data)
-                .call(network)
+              d3.select(element[0])
+                .selectAll(".graph-container")
+                  .datum(data)
+                  .call(network)
 
-            // trick for sigma end
-            $(d3.select(element[0]).node()).parent().css("display","")
+              // trick for sigma end
+              $(d3.select(element[0]).node()).parent().css("display","")
 
+            }
             })
 
 
@@ -756,12 +769,11 @@ angular.module('citySensing.directives', [])
       replace: false,
       templateUrl: '../templates/maplegend.html',
       link: function postLink(scope, element, attrs) {
-
         scope.$watch('color', function(){
           if (!scope.color) return;
-          if(scope.color.value == "social_activity")
-            scope.mapLegend = ['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']
-          else scope.mapLegend = ['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641']
+          if(scope.color.value == "social_sentiment")
+            scope.mapLegend = ['#D7191C','#FDAE61','#f6e154','#A6D96A','#1A9641']
+          else scope.mapLegend = ['#ced9ee','#87bbdc', '#4b99c8', '#236fa6', '#074381']
         })
 
       }
@@ -771,15 +783,14 @@ angular.module('citySensing.directives', [])
  .directive('timeLegend', [ function () {
   return {
     restrict: 'A',
-    scope : {
+    /*scope : {
       color : "=",
       size : "=",
       timeHighlight : "="
-    },
+    },*/
     replace: false,
     templateUrl: '../templates/timelegend.html',
     link: function postLink(scope, element, attrs) {
-
       scope.$watch('color', function(){
         if (!scope.color) return;
         if(scope.color.value == "social_activity")

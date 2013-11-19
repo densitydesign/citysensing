@@ -388,6 +388,15 @@ rect.bar {
 
 }
 
+.time-legend{
+  width:20px;
+  height: 2px;
+  float: left;
+  margin: 10px 10px 0px 0px;
+
+}
+
+
 div[flows-one],
 div[flows-two] {
   text-align: center;
