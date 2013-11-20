@@ -10,6 +10,9 @@
         maxZoom = 17,
         dragging = false,
         coordinates = [45.4640, 9.1916],
+        southWest = L.latLng(45.2865, 8.9017),
+        northEast = L.latLng(45.6313, 9.4153),
+        maxBounds = L.latLngBounds(southWest, northEast),
         l = new L.StamenTileLayer("toner-lite"),
         m = new L.Map("map", {
             center: new L.LatLng(coordinates[0], coordinates[1]),
@@ -18,6 +21,7 @@
             maxZoom : maxZoom,
             scrollWheelZoom : false
         }),
+        utfGrid = new L.UtfGrid('tiles/{z}/{x}/{y}.grid.json', {useJsonP: false}),
         showMap = true,
         //colorRange = ['red','green'],
         //sizeRange = [0.1,1],
@@ -74,12 +78,13 @@
         
         var layers = {
           "toner" : l,
-          "grid" : gridLayer
+          "grid" : gridLayer,
+          "utf" : utfGrid
         }
 
         l.setOpacity(0.3)
         gridLayer.setOpacity(0.8)
-        m.addLayer(l).addLayer(gridLayer);
+        m.addLayer(l).addLayer(gridLayer).addLayer(utfGrid);
 
 
     function map(selection){
@@ -99,6 +104,15 @@
         gridLayer.options.projection = project;
         updateGrid();
         gridLayer.draw()
+
+        //console.log(collection.features)
+        utfGrid.on('mouseover', function (e) {
+          var id = e.data.id;
+          var cellover = collection.features.filter(function(d){
+            return d.properties.id == id
+          })
+          
+        });
 
         m.on("moveend", updateGrid);
 

@@ -7,7 +7,8 @@ var express = require('express'),
   routes = require('./routes'),
   api = require('./routes/api'),
   http = require('http'),
-  path = require('path');
+  path = require('path'),
+  MBTiles = require('mbtiles');
 
 var app = module.exports = express();
 
@@ -60,8 +61,44 @@ app.post('/api/eventlist', api.eventList);
 app.post('/api/inout', api.inout);
 app.post('/api/test', api.test);
 
-// redirect all others to the index (HTML5 history)
-app.get('*', routes.index);
+// UTF grid service
+
+var mbtilesLocation = __dirname + '/public/grid/citysensing.mbtiles';
+
+new MBTiles(mbtilesLocation, function(err, mbtiles) {
+  if (err) throw err;
+  app.get('/tiles/:z/:x/:y.*', function(req, res) {
+    var extension = req.param(0);
+    switch (extension) {
+      case "png": {
+        mbtiles.getTile(req.param('z'), req.param('x'), req.param('y'), function(err, tile, headers) {
+          if (err) {
+            res.status(404).send('Tile rendering error: ' + err + '\n');
+          } else {
+            res.header("Content-Type", "image/png")
+            res.send(tile);
+          }
+        });
+        break;
+      }
+      case "grid.json": {
+        mbtiles.getGrid(req.param('z'), req.param('x'), req.param('y'), function(err, grid, headers) {
+          if (err) {
+            res.status(404).send('Grid rendering error: ' + err + '\n');
+          } else {
+            res.header("Content-Type", "text/json")
+            res.send(grid);
+          }
+        });
+        break;
+      }
+    }
+  });
+	// redirect all others to the index (HTML5 history)
+	app.get('*', routes.index);
+});
+
+
 
 
 /**

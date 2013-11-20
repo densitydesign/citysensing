@@ -706,26 +706,17 @@ angular.module('citySensing.directives', [])
       link: function postLink(scope, element, attrs) {
 
         function update(){
-          var fakeRequest = {};
-          fakeRequest.cells = scope.areas[0].cells;
-          fakeRequest.start = scope.request.start;
-          fakeRequest.end = scope.request.end;
-          apiService.getInOut(fakeRequest)
+          apiService.getInOut(scope.request)
             .done(function(data){
 
-              var callsList = []
-              d3.keys(data).forEach(function(d){
-                var list = data[d];
-
-                list.forEach(function(f){
-                  f.type = d;
-                  f.count = Math.round(f.count)
-                  if(f.type == 'internationalContantactsIn' || f.type == 'internationalContantactsOut'){
-                    f.countryCode = scope.toCountryName(f.countryCode)
-                  }
-                  callsList.push(f)
-                })
+              var callsList = data['contactsChart']
+              callsList.forEach(function(f){
+                f.count = Math.round(f.count)
+                if(f.location == 'international'){
+                f.countryCode = scope.toCountryName(f.countryCode)
+                }
               })
+
               scope.inout = callsList;
               scope.$apply();
             })
@@ -735,7 +726,9 @@ angular.module('citySensing.directives', [])
         }
 
         scope.$watch('request', function(){
-          update();
+          // NOTE: limit query if all cells are requested. To be removed
+          if(scope.request.cells.length){ update()}
+          else return;
         },true)
 
       }
