@@ -86,6 +86,40 @@
         gridLayer.setOpacity(0.8)
         m.addLayer(l).addLayer(gridLayer).addLayer(utfGrid);
 
+        var info = L.control();
+        info.options.position = 'bottomleft';
+        info.onAdd = function (map) {
+          this._div = L.DomUtil.create('div', 'popover');
+          d3.select(this._div).attr("style","opacity:0")
+          this.update();
+          return this._div;
+        };
+
+        info.update = function (props) {
+          if(props){
+          d3.select(this._div).attr("style","opacity:1")
+          this._div.innerHTML = "<h3 class='popover-title'>Cell " + props.properties.id + "</h3><div class='popover-content'>" + popover(props).html() + "</div>";
+          }else{
+           d3.select(this._div).attr("style","opacity:0")
+          }
+        };
+
+        m.addControl(info);
+
+        utfGrid.on('mouseover', function (e) {
+          var id = e.data.id;
+          var cellover = collection.features.filter(function(d){
+            return d.properties.id == id
+          });
+            info.update(cellover[0])
+        }).on('mouseout', function(e){ info.update()});
+
+        utfGrid.on('click',function(e){
+            if(e.data){
+                utfGridId = e.data.id
+                dispatch.selected(utfGridId);
+            }
+        });
 
     function map(selection){
       selection.each(function(data){
@@ -105,15 +139,9 @@
         updateGrid();
         gridLayer.draw()
 
-        //console.log(collection.features)
-        utfGrid.on('mouseover', function (e) {
-          var id = e.data.id;
-          var cellover = collection.features.filter(function(d){
-            return d.properties.id == id
-          })
-          
-        });
-
+        
+        m.on("mouseout", function(){info.update()})
+        
         m.on("moveend", updateGrid);
 
         function updateGrid(){

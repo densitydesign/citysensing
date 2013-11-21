@@ -198,15 +198,7 @@ angular.module('citySensing.directives', [])
             .attr("class","muted")
             .html(function(){ return d.properties.selected ? "This cell is selected." : "Click to select this cell."})
 
-          return {
-            title: "Cell " + d.properties.id,
-            content: div,
-            detection: "shape",
-            placement: "mouse",
-            gravity: "left",
-            displacement: [-290, -85 ],
-            mousemove: true
-          };
+          return div
 
         }
 
