@@ -698,29 +698,32 @@ angular.module('citySensing.directives', [])
       link: function postLink(scope, element, attrs) {
 
         function update(){
-          apiService.getInOut(scope.request)
-            .done(function(data){
+          if(scope.request.cells.length){
+            apiService.getInOut(scope.request)
+              .done(function(data){
 
-              var callsList = data['contactsChart']
-              callsList.forEach(function(f){
-                f.count = Math.round(f.count)
-                if(f.location == 'international'){
-                f.countryCode = scope.toCountryName(f.countryCode)
-                }
+                var callsList = data['contactsChart']
+                callsList.forEach(function(f){
+                  f.count = Math.round(f.count)
+                  if(f.location == 'international'){
+                  f.countryCode = scope.toCountryName(f.countryCode)
+                  }
+                })
+
+                scope.inout = callsList;
+                scope.$apply();
               })
-
-              scope.inout = callsList;
-              scope.$apply();
-            })
-            .fail(function(error){
-              scope.error = error;
-            })
+              .fail(function(error){
+                scope.error = error;
+              })
+          }
+          else{
+            scope.inout = []
+          }
         }
 
         scope.$watch('request', function(){
-          // NOTE: limit query if all cells are requested. To be removed
-          if(scope.request.cells.length){ update()}
-          else return;
+              update()
         },true)
 
       }
