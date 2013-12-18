@@ -149,7 +149,7 @@
 	      	});
 
 	    sig.iterNodes(function(node){
-        		node.size = node.inDegree;
+        		node.size = node.degree;
       	});
 
 
