@@ -14,7 +14,6 @@ angular.module('citySensing.directives', [])
         function update(){
           apiService.getSidePanel(scope.request)
             .done(function(data){
-              
               scope.hashtags = data.hashtags;
               scope.callsIn = data.calls_in;
               scope.callsOut = data.calls_out;
@@ -95,6 +94,7 @@ angular.module('citySensing.directives', [])
       link: function postLink(scope, element, attrs) {
 
         scope.selectArea = function(area) {
+          console.log(area)
           scope.request.cells = area.cells;
         }
 
@@ -126,6 +126,7 @@ angular.module('citySensing.directives', [])
           fakeRequest.cells = [];
           fakeRequest.start = scope.request.start;
           fakeRequest.end = scope.request.end;
+          fakeRequest.port = scope.request.port;
           //console.log(scope.request, fakeRequest)
           apiService.getMap(fakeRequest)
             .done(function(data){
@@ -470,6 +471,7 @@ angular.module('citySensing.directives', [])
           fake.start = scope.star;
           fake.end = scope.end;
           fake.cells = scope.request.cells;
+          fake.port = scope.request.port;
           
           apiService.getTimelineFocus(fake)
             .done(function(data){
