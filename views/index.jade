@@ -8,7 +8,7 @@ block body
     div.navbar-inner
       ul.nav
         li
-          a.brand(href="#") CitySensing
+          a.brand(href="#") CitySensing (dev)
         li
           p.navbar-text.muted Fuorisalone 2013
 
@@ -16,7 +16,7 @@ block body
         li
           a(href="#/about") About
 
-  div(ng-view)
+   div(ng-view)
 
 
   script(src='js/lib/jquery/jquery.min.js')
@@ -27,15 +27,17 @@ block body
 
   script(src='js/lib/topojson/topojson.js')
   script(src='js/lib/leaflet/leaflet.js')
+  script(src='js/lib/leaflet-utf/leaflet.utfgrid.js')
+  script(src='js/lib/leaflet-canvasLayer/leaflet_canvas_layer.js')
+  script(src='js/lib/leaflet-canvasLayer/leaflet_tileloader_mixin.js')
   script(src='js/lib/stamen/tile.stamen.js')
-  script(src='js/lib/d3/d3.v3.min.js')
+  script(src='js/lib/d3/d3.min.js')
   script(src='js/lib/d3/sankey.js')
   script(src='js/lib/d3-bootstrap/d3-bootstrap-plugins.js')
   script(src='js/lib/sigma/sigma.min.js')
   script(src='js/lib/sigma/sigma.forceatlas2.js')
 
   script(src='js/lib/citysensing/multiline.js')
-  script(src='js/lib/citysensing/timeline.js')
   script(src='js/lib/citysensing/map.js')
   script(src='js/lib/citysensing/network.js')
   script(src='js/lib/citysensing/graph.js')
@@ -45,7 +47,7 @@ block body
   script(src='js/lib/bootstrap-select/bootstrap-select.min.js')
 
   script(src='js/lib/angular/angular.min.js')
-  script(src='js/lib/ui-bootstrap/ui-bootstrap-0.3.0.min.js')
+  script(src='js/lib/ui-bootstrap/ui-bootstrap-tpls-0.4.0.min.js')
 
   script(src='js/app.js')
   script(src='js/services.js')

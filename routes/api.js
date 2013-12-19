@@ -154,6 +154,23 @@ exports.eventList = function (req, res) {
   )
 };
 
+exports.inout = function (req, res) {
+  request(
+    {
+      method : 'POST',
+      url : baseUrl + '/inoutchart',
+      headers : headers,
+      body : JSON.stringify(req.body)
+    },
+
+    function (error, response, body) {
+      if (response.statusCode == 201) {
+        res.json(JSON.parse(body));
+      } else res.json({'error':JSON.parse(body)});
+    }
+  )
+};
+
 exports.test = function (req, res) {
   request(
     {
@@ -169,3 +186,4 @@ exports.test = function (req, res) {
     }
   )
 };
+

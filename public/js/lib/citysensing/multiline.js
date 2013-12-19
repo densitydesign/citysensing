@@ -79,32 +79,33 @@
       height = 100,
       activities = [],
       brushing = false,
-      dispatch = d3.dispatch("brushed"),
+      dispatch = d3.dispatch("brushed", "highlight"),
       startBrush,
-      endBrush;
+      endBrush,
+      colors,
+      scales = {};
 
     function vis(selection){
       selection.each(function(data){
 
-        var margin = {top: 10, right: 10, bottom: 30, left: 20},
+        var margin = {top: 10, right: 10, bottom: 30, left: 50},
           w = width - margin.right - margin.left,
           h = height - margin.top - margin.bottom
+
+        var lastOver = null;
 
         var x = d3.time.scale()
             .range([margin.left, w]);
 
         var y = d3.scale.linear()
+            .domain([0,1])
             .range([h, 0]);
 
-        var color = d3.scale.ordinal().range(['#6CC5F0','#F0965B']) //d3.scale.category10(); 
+        var color = function(d){ return colors[d]; };//d3.scale.ordinal().range(['#6CC5F0','#F0965B']) //d3.scale.category10(); 
 
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left");
 
         data.forEach(function(d) {
           d.date = new Date(d.start);
@@ -121,30 +122,18 @@
             .y0(h)
             .y1(function(d) { return y(d.value); });
 
-        color.domain(d3.keys(data[0]).filter(function(key) { return activities.indexOf(key) != -1; }));
+        //color.domain(d3.keys(data[0]).filter(function(key) { return activities.indexOf(key) != -1; }));
 
-        var lines = color.domain().map(function(name) {
+        if (!scales) scales = {};
 
-          // normalizing...
-          var scale = d3.scale.linear().range([0,1]).domain([
-            d3.min(data, function(d){ return d[name]; }),
-            d3.max(data, function(d){ return d[name]; })
-            ])
-
-          return {
-            name: name,
-            values: data.map(function(d) {
-              return { date: new Date(d.start), value: +scale(d[name]) };
-            })
-          };
-        });
+        var lines = activities.map(linesAccessor);
 
         x.domain(d3.extent(data, function(d) { return d.date; }));
 
-        y.domain([
+       /*y.domain([
           d3.min(lines, function(c) { return d3.min(c.values, function(v) { return v.value; }); }),
           d3.max(lines, function(c) { return d3.max(c.values, function(v) { return v.value; }); })
-        ]);
+        ]);*/
 
 
         /* Areas */
@@ -161,15 +150,13 @@
           .data(function(d){ return [d];})
 
         path
-          .style("fill", function(d){ return color(d.name); })
           .style("stroke", function(d) { return color(d.name); })
           .transition()
-          .attr("d", function(d) { return line(d.values); })
+            .attr("d", function(d) { return line(d.values); })
 
         path.enter().append("path")
           .attr("class", "area")
           .style("stroke", function(d) { return color(d.name); })
-          .style("fill", function(d){ return color(d.name); })
           .transition()
             .attr("d", function(d) { return line(d.values); })
 
@@ -177,7 +164,7 @@
 
         /* Axis */
 
-        selection.selectAll("g.axis").remove();
+        selection.selectAll("g.axis.x").remove();
 
         selection.append("g")
             .attr("class", "x axis")
@@ -186,6 +173,22 @@
 
         var startExtent = d3.max([startBrush, data[0].date]),
             endExtent = d3.min([endBrush,data[data.length-1].date]);
+
+        selection.selectAll(".highlight").remove();
+
+        /* Highlight line */
+
+        var highlightLine =  selection.append("line")
+          .attr("class","highlight")
+          .attr("x1", margin.left)
+          .attr("x2", margin.left)
+          .attr("y1", h)
+          .attr("y2", 0)
+          .style("display", "none")
+
+        selection.on("mousemove.highlight", highlight);
+        selection.on("mouseover.highlight", function(){ selection.select(".highlight").style("display",""); dispatch.highlight(null);});
+        selection.on("mouseout.highlight", function(){ selection.select(".highlight").style("display","none"); dispatch.highlight(null); });
 
         /* Mask */
 
@@ -249,10 +252,40 @@
             
           brushNode.selectAll(".resize").append("path")
             .attr("d", resizePath);
-              //  .attr("transform", "translate(0," +  height / 2 + ")")
             
 
           //brushNode.exit().remove();
+
+        }
+
+
+        function highlight() {
+
+          if (d3.event.offsetX < margin.left)  {
+            selection.select(".highlight").style("display","none")
+            dispatch.highlight(null);
+            return;
+          }
+          else selection.select(".highlight").style("display","")
+
+          selection.select(".highlight")
+           // .transition()
+           // .duration(100)
+            .attr("x1", d3.event.offsetX)
+            .attr("x2", d3.event.offsetX)
+
+          var t = x.invert(d3.event.offsetX),
+            values = {};
+
+          lines.forEach(function(d){
+            var i = 0;
+            for (i in d.values) {
+              if (d.values[i].date > t) break;
+            }
+            values[d.name] = scales[d.name].invert(d.values[i].value);
+          })
+
+          dispatch.highlight(values);
 
         }
 
@@ -272,6 +305,10 @@
         
 
       })
+    }
+
+    function linesAccessor(name) {
+      return 0;
     }
 
     vis.startBrush = function(_start){
@@ -303,10 +340,29 @@
       activities = _activities;
       return vis;
     }
+    
+    vis.linesAccessor = function(_lines){
+      if (!arguments.length) return linesAccessor;
+      linesAccessor = _lines;
+      return vis;
+    }
 
     vis.brushing = function(_brushing){
       if (!arguments.length) return brushing;
       brushing = _brushing;
+      return vis;
+    }
+
+    vis.scales = function(key, value){
+      if (!arguments.length) return scales;
+      if (arguments.length === 1) return scales[key];
+      scales[key] = value;
+      return vis;
+    }
+
+    vis.colors = function(_colors){
+      if (!arguments.length) return colors;
+      colors = _colors;
       return vis;
     }
 

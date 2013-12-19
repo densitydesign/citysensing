@@ -6,7 +6,8 @@ angular.module('citySensing', [
   'citySensing.controllers',
   'citySensing.filters',
   'citySensing.services',
-  'citySensing.directives'
+  'citySensing.directives',
+  'ui.bootstrap'
 ]).
 config(function ($routeProvider, $locationProvider) {
   $routeProvider

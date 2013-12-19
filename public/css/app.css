@@ -29,9 +29,10 @@ label, input, button, select, textarea {
 
 #map-wrap {
   background-color: #ffffff;
-  -moz-box-shadow: inset 2px 0px 3px -1px #eee;
+  /*-moz-box-shadow: inset 2px 0px 3px -1px #eee;
   -webkit-box-shadow: inset 2px 0px 3px -1px #eee;
   box-shadow: inset 2px 0px 3px -1px #eee;
+  */
   border-left: 1px solid #eee;
 }
 
@@ -58,6 +59,10 @@ label, input, button, select, textarea {
   background-color: #f8f8f8;
   border-top: 1px solid #eee;
   min-height: 100px;
+}
+
+.timeline-wrap {
+  padding: 25px 15px 20px 15px;
 }
 
 #eventlist {
@@ -136,13 +141,12 @@ label, input, button, select, textarea {
 }
 
 legend {
-  text-transform: uppercase;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: bold;
   color: #333;
   border: none;
   margin-bottom: 5px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 
@@ -177,9 +181,6 @@ legend {
   border-bottom: none;
 }
 
-.leaflet-tile-pane {
-  opacity: .3;
-}
 
 .leaflet-bar {
   box-shadow: none;
@@ -244,6 +245,17 @@ rect.bar {
   fill: #aaa;
   fill-opacity: .125;
   shape-rendering: crispEdges;
+}
+
+.brush .extent:hover {
+
+}
+
+.multiline line.highlight {
+  stroke: #888;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+  stroke-dasharray: 3px;
 }
 
 
@@ -376,7 +388,17 @@ rect.bar {
 
 }
 
-div[flows] {
+.time-legend{
+  width:20px;
+  height: 2px;
+  float: left;
+  margin: 10px 10px 0px 0px;
+
+}
+
+
+div[flows-one],
+div[flows-two] {
   text-align: center;
 }
 
@@ -453,8 +475,6 @@ table {
   font-weight: 600;
 }
 
-
-
 #spinner-container {
   bottom: 0;
   top: 0;
@@ -470,4 +490,17 @@ table {
   position: absolute;
   top: 50%;
   left: 50%;
+}
+
+[side-panel] {
+  margin-bottom: 50px;
+}
+
+#selection {
+  margin-bottom: 15px;
+  padding: 0px 15px;
+}
+
+#inoutSearch > .active {
+  border-color: #dcdcdc;
 }

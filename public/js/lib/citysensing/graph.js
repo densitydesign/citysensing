@@ -78,7 +78,7 @@
 						defaultNodeBorderColor: '#fff'
       		})
 			.graphProperties({
-			       minNodeSize: 4,
+			       minNodeSize: 2,
 			       maxNodeSize: 10
 			       //minEdgeSize: 1,
 			       //maxEdgeSize: 20
@@ -131,9 +131,14 @@
       		})
       	});
 
+
+      	data.links.sort(function(a,b){ return b.value - a.value; })
+
+      	var egdeValues = data.links.map(function(d){return d.value})
+      	var edgesFirstQuartile = d3.quantile(egdeValues, 0.25)
+      	
       	data.links
-      		.sort(function(a,b){ return b.value - a.value; })
-      		.slice(1,1000)
+      		.filter(function(d){return d.value > edgesFirstQuartile})
       		.forEach(function(d,i){
 	      		sig.addEdge(
 							i,
@@ -144,7 +149,7 @@
 	      	});
 
 	    sig.iterNodes(function(node){
-        		node.size = node.inDegree;
+        		node.size = node.degree;
       	});
 
 

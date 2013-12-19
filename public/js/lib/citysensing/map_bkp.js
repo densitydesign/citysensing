@@ -10,9 +10,6 @@
         maxZoom = 17,
         dragging = false,
         coordinates = [45.4640, 9.1916],
-        southWest = L.latLng(45.2865, 8.9017),
-        northEast = L.latLng(45.6313, 9.4153),
-        maxBounds = L.latLngBounds(southWest, northEast),
         l = new L.StamenTileLayer("toner-lite"),
         m = new L.Map("map", {
             center: new L.LatLng(coordinates[0], coordinates[1]),
@@ -21,145 +18,68 @@
             maxZoom : maxZoom,
             scrollWheelZoom : false
         }),
-        utfGrid = new L.UtfGrid('tiles/{z}/{x}/{y}.grid.json', {useJsonP: false}),
         showMap = true,
         //colorRange = ['red','green'],
         //sizeRange = [0.1,1],
         //colorScale,
         //sizeScale,
+        baseLayers = {
+          "Map": l
+        },
         dispatch = d3.dispatch("selected"),
         collection;
-        var cLayer = L.CanvasLayer.extend({
-          
-          options: {
-            'features' : {},
-            'projection' : function(x){return x}
-          },
 
-          render: function() {
-              var canvas = this.getCanvas();
-              var context = canvas.getContext('2d');
+    m.addLayer(l);
 
-              // render
-              var path = d3.geo.path().projection(this.options.projection).context(context);
-              
-              if (!this.options.features['features'] || this.options.features['features'].length < 1) return;
-              
-              
-              this.options.features['features'].forEach(function(d,i){
-                  
+    //L.control.layers({},baseLayers).addTo(m);
 
-                  context.save();
-                  context.fillStyle = colorScale(color(d.properties));
-                  var x = path.centroid(d)[0]
-                  var y = path.centroid(d)[1]
-                  context.translate(x, y)
-                  context.scale(sizeScale(size(d.properties)),sizeScale(size(d.properties)));
-                  context.translate(-x, -y)
-                  context.beginPath()
-                  path(d)
-                  context.fill();
-                  context.restore();
-                  if(d.properties.selected===true){
-                    context.strokeStyle = "#333"
-                    context.lineWidth = 0.5;
-                    context.beginPath()
-                    path(d)
-                    context.stroke()
-                  }
-
-                  
-              });
-
-            }
-          });
-
-        var gridLayer = new cLayer();
-        
-        var layers = {
-          "toner" : l,
-          "grid" : gridLayer,
-          "utf" : utfGrid
-        }
-
-        l.setOpacity(0.3)
-        gridLayer.setOpacity(0.8)
-        m.addLayer(l).addLayer(gridLayer).addLayer(utfGrid);
-
-        var info = L.control();
-        info.options.position = 'bottomleft';
-        info.onAdd = function (map) {
-          this._div = L.DomUtil.create('div', 'popover');
-          d3.select(this._div).attr("style","opacity:0")
-          this.update();
-          return this._div;
-        };
-
-        info.update = function (props) {
-          if(props){
-          d3.select(this._div).attr("style","opacity:1")
-          this._div.innerHTML = "<h3 class='popover-title'>Cell " + props.properties.id + "</h3><div class='popover-content'>" + popover(props).html() + "</div>";
-          }else{
-           d3.select(this._div).attr("style","opacity:0")
-          }
-        };
-
-        m.addControl(info);
-
-        utfGrid.on('mouseover', function (e) {
-          var id = e.data.id;
-          var cellover = collection.features.filter(function(d){
-            return d.properties.id == id
-          });
-            info.update(cellover[0])
-        }).on('mouseout', function(e){ info.update()});
-
-        utfGrid.on('click',function(e){
-            if(e.data){
-                utfGridId = e.data.id
-                dispatch.selected(utfGridId);
-            }
-        });
 
     function map(selection){
       selection.each(function(data){
 
+        var tiles = new L.TileLayer.Canvas();
+        tiles.drawTile = function (canvas, tile, zoom) {
+        var context = canvas.getContext('2d');
+
+        };
+
         collection = topojson.feature(grid, grid.objects.grid);
+
+        var path = d3.geo.path().projection(project),
+            bounds = d3.geo.bounds(collection);
+
+        //var colorScale = d3.scale.quantile().range(colorRange).domain([ d3.min(data, color), d3.mean(data, color), d3.max(data, color) ]),
+        //    sizeScale = d3.scale.linear().range(sizeRange).domain([ d3.min(data, size), d3.max(data, size) ]);
+
+        // main overlay
+        var svg = d3.select(m.getPanes().overlayPane).selectAll("svg")
+            .data([data])
+            svg.enter().append("svg");
+        
+        var g = svg.selectAll("g.leaflet-zoom-hide")
+            .data(function(d){ return [d]; })
+            g.enter().append("g").attr("class", "leaflet-zoom-hide");
+
+        if (showMap) d3.selectAll(".leaflet-tile-pane")
+          .style("opacity",.3)
+        else d3.selectAll(".leaflet-tile-pane")
+          .style("opacity",0)
 
         var cells = {};
 
         data.forEach(function(d){ cells[d.id] = d; });       
-          collection.features.forEach(function(d){
+        collection.features.forEach(function(d){
           d.properties = cells[d.properties.id];
         });
-        
         collection.features = collection.features.filter(function(d){ return d.properties; })
 
-        gridLayer.options.projection = project;
-        updateGrid();
-        gridLayer.draw()
-
-        
-        m.on("mouseout", function(){info.update()})
-        
-        m.on("moveend", updateGrid);
-
-        function updateGrid(){
-          var bb = m.getBounds(),
-              filtered = {};
-
-          filtered.type = "FeatureCollection";
-          filtered.features = collection.features.filter(function(d){
-                var centroid = d3.geo.centroid(d);
-                return bb.contains(new L.LatLng(centroid[1], centroid[0]));
-          });
-          
-          gridLayer.options.features = filtered;
-        }
-
+        m.on("viewreset", drawGrid);
+        m.on("moveend", drawGrid);
         m.on("dragstart",function(){ dragging = true; })
         m.on("dragend",function(){ dragging = false; })
 
+
+        drawGrid();
 
         function drawGrid() {
           
@@ -208,7 +128,7 @@
                     + "scale(" + sizeScale(size(d.properties)) + ")"
                     + "translate(" + -x + "," + -y + ")";
             })
-            .attr("d", path)
+            //.attr("d", path)
 
           fronts.enter().append("path")
             .attr("class","front")
@@ -222,7 +142,7 @@
                     + "scale(" + sizeScale(size(d.properties)) + ")"
                     + "translate(" + -x + "," + -y + ")";
             })
-            .attr("d", path)
+            //.attr("d", path)
 
           fronts.exit().remove()
 
@@ -230,11 +150,11 @@
             .data(function(d){ return [d]; })
 
           backs
-            .attr("d", path)
+            //.attr("d", path)
 
           backs.enter().append("path")
             .attr("class","back")
-            .attr("d", path)
+            //.attr("d", path)
 
           backs.exit().remove()
 
@@ -264,7 +184,7 @@
         }
 
         function project(x) {
-          var point = m.latLngToContainerPoint(new L.LatLng(x[1], x[0]));
+          var point = m.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
           return [point.x, point.y];
         }
 
