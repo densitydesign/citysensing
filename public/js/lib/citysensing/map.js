@@ -9,26 +9,22 @@
         minZoom = 11,
         maxZoom = 17,
         dragging = false,
-        coordinates = [45.4640, 9.1916],
-        southWest = L.latLng(45.2865, 8.9017),
-        northEast = L.latLng(45.6313, 9.4153),
-        maxBounds = L.latLngBounds(southWest, northEast),
+        coordinates,
+        tile,
+        //southWest = [],
+        //northEast =[],
+        //sW = L.latLng(southWest[0], southWest[1]),
+        //nE = L.latLng(northEast[0], northEast[1]),
+        //maxBounds = L.latLngBounds(sW, nE),
         l = new L.StamenTileLayer("toner-lite"),
-        m = new L.Map("map", {
-            center: new L.LatLng(coordinates[0], coordinates[1]),
-            zoom: zoom,
-            minZoom : minZoom,
-            maxZoom : maxZoom,
-            scrollWheelZoom : false
-        }),
-        utfGrid = new L.UtfGrid('tiles/{z}/{x}/{y}.grid.json', {useJsonP: false}),
+        //utfGrid = new L.UtfGrid('l/tiles/{z}/{x}/{y}.grid.json', {useJsonP: false}),
+        utfGrid,
         showMap = true,
-        //colorRange = ['red','green'],
-        //sizeRange = [0.1,1],
-        //colorScale,
-        //sizeScale,
         dispatch = d3.dispatch("selected"),
-        collection;
+        collection,
+        m,
+        info;
+
         var cLayer = L.CanvasLayer.extend({
           
           options: {
@@ -84,9 +80,65 @@
 
         l.setOpacity(0.3)
         gridLayer.setOpacity(0.8)
-        m.addLayer(l).addLayer(gridLayer).addLayer(utfGrid);
+        //m.addLayer(l).addLayer(gridLayer).addLayer(utfGrid);
 
-        var info = L.control();
+        // var info = L.control();
+        // info.options.position = 'bottomleft';
+        // info.onAdd = function (map) {
+        //   this._div = L.DomUtil.create('div', 'popover');
+        //   d3.select(this._div).attr("style","opacity:0")
+        //   this.update();
+        //   return this._div;
+        // };
+
+        // info.update = function (props) {
+        //   if(props){
+        //   d3.select(this._div).attr("style","opacity:1")
+        //   this._div.innerHTML = "<h3 class='popover-title'>Cell " + props.properties.id + "</h3><div class='popover-content'>" + popover(props).html() + "</div>";
+        //   }else{
+        //    d3.select(this._div).attr("style","opacity:0")
+        //   }
+        // };
+
+        //m.addControl(info);
+
+        // utfGrid.on('mouseover', function (e) {
+        //   var id = e.data.id;
+        //   var cellover = collection.features.filter(function(d){
+        //     return d.properties.id == id
+        //   });
+        //     info.update(cellover[0])
+        // }).on('mouseout', function(e){ info.update()});
+
+        // utfGrid.on('click',function(e){
+        //     if(e.data){
+        //         utfGridId = e.data.id
+        //         dispatch.selected(utfGridId);
+        //     }
+        // });
+
+         // var m = new L.Map("map", {
+         //   scrollWheelZoom : false,
+         //   minZoom : minZoom,
+         //   maxZoom : maxZoom
+         // })
+
+
+    function map(selection){
+      selection.each(function(data){
+        
+        if (!m){
+          m = new L.Map("map", {
+              center: new L.LatLng(coordinates[0], coordinates[1]),
+              zoom: zoom,
+              minZoom : minZoom,
+              maxZoom : maxZoom,
+              scrollWheelZoom : false
+         })
+        }
+        
+        if(!info){
+        info = L.control();
         info.options.position = 'bottomleft';
         info.onAdd = function (map) {
           this._div = L.DomUtil.create('div', 'popover');
@@ -103,26 +155,29 @@
            d3.select(this._div).attr("style","opacity:0")
           }
         };
-
         m.addControl(info);
+        }
 
-        utfGrid.on('mouseover', function (e) {
-          var id = e.data.id;
-          var cellover = collection.features.filter(function(d){
-            return d.properties.id == id
-          });
+        if(!utfGrid){
+
+          utfGrid = new L.UtfGrid(tile + '/tiles/{z}/{x}/{y}.grid.json', {useJsonP: false});
+
+          utfGrid.on('mouseover', function (e) {
+            var id = e.data.id;
+            var cellover = collection.features.filter(function(d){
+              return d.properties.id == id
+            });
             info.update(cellover[0])
-        }).on('mouseout', function(e){ info.update()});
+          }).on('mouseout', function(e){ info.update()});
 
-        utfGrid.on('click',function(e){
+          utfGrid.on('click',function(e){
             if(e.data){
                 utfGridId = e.data.id
                 dispatch.selected(utfGridId);
             }
-        });
-
-    function map(selection){
-      selection.each(function(data){
+          });
+        }
+        m.addLayer(l).addLayer(gridLayer).addLayer(utfGrid);
 
         collection = topojson.feature(grid, grid.objects.grid);
 
@@ -297,6 +352,12 @@
       return map;
     }
 
+    map.tile = function(x){
+      if (!arguments.length) return tile;
+      tile = x;
+      return map;
+    }
+
     map.selected = function(x){
       if (!arguments.length) return selected;
       selected = x;
@@ -330,6 +391,18 @@
     map.coordinates = function(x){
       if (!arguments.length) return coordinates;
       coordinates = x;
+      return map;
+    }
+
+    map.southWest = function(x){
+      if (!arguments.length) return southWest;
+      southWest = x;
+      return map;
+    }
+
+    map.northEast = function(x){
+      if (!arguments.length) return northEast;
+      northEast = x;
       return map;
     }
 

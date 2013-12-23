@@ -64,10 +64,12 @@ app.post('/api/test', api.test);
 // UTF grid service
 
 var mbtilesLocation = __dirname + '/public/grid/citysensing.mbtiles';
+var mbtilesLocation2 = __dirname + '/public/grid/lucca.mbtiles';
+
 
 new MBTiles(mbtilesLocation, function(err, mbtiles) {
   if (err) throw err;
-  app.get('/tiles/:z/:x/:y.*', function(req, res) {
+  app.get('/m/tiles/:z/:x/:y.*', function(req, res) {
     var extension = req.param(0);
     switch (extension) {
       case "png": {
@@ -94,8 +96,42 @@ new MBTiles(mbtilesLocation, function(err, mbtiles) {
       }
     }
   });
+
+      //load another layer
+      new MBTiles(mbtilesLocation2, function(err, mbtiles2) {
+      if (err) throw err;
+      app.get('/l/tiles/:z/:x/:y.*', function(req, res) {
+        var extension = req.param(0);
+        switch (extension) {
+          case "png": {
+            mbtiles2.getTile(req.param('z'), req.param('x'), req.param('y'), function(err, tile, headers) {
+              if (err) {
+                res.status(404).send('Tile rendering error: ' + err + '\n');
+              } else {
+                res.header("Content-Type", "image/png")
+                res.send(tile);
+              }
+            });
+            break;
+          }
+          case "grid.json": {
+            mbtiles2.getGrid(req.param('z'), req.param('x'), req.param('y'), function(err, grid, headers) {
+              if (err) {
+                res.status(404).send('Grid rendering error: ' + err + '\n');
+              } else {
+                res.header("Content-Type", "text/json")
+                res.send(grid);
+              }
+            });
+            break;
+          }
+        }
+      });
+      // redirect all others to the index (HTML5 history)
+      app.get('*', routes.index);
+    });
 	// redirect all others to the index (HTML5 history)
-	app.get('*', routes.index);
+	//app.get('*', routes.index);
 });
 
 

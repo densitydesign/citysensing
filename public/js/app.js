@@ -17,6 +17,7 @@ config(function ($routeProvider, $locationProvider) {
     .when('/',{redirectTo: '/about'})
     .when('/mfw',{templateUrl: 'partials/main', controller: 'mfw'})
     .when('/mdw',{templateUrl: 'partials/main', controller: 'mainCtrl'})
+    .when('/lcg',{templateUrl: 'partials/main', controller: 'lcg'})
     .otherwise({redirectTo: '/'});
 
   $locationProvider.html5Mode(true);

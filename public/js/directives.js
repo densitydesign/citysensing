@@ -94,7 +94,6 @@ angular.module('citySensing.directives', [])
       link: function postLink(scope, element, attrs) {
 
         scope.selectArea = function(area) {
-          console.log(area)
           scope.request.cells = area.cells;
         }
 
@@ -109,9 +108,11 @@ angular.module('citySensing.directives', [])
       replace: false,
 
       link: function postLink(scope, element, attrs) {
-
         var cells = [],
             map = citysensing.map()
+            .coordinates(scope.coordinates)
+            .zoom(scope.zoom)
+            .tile(scope.tile)
             .on("selected", function (d) {
               var index = scope.request.cells.indexOf(d);
               if (index == -1) scope.request.cells.push(d);
@@ -130,7 +131,6 @@ angular.module('citySensing.directives', [])
           //console.log(scope.request, fakeRequest)
           apiService.getMap(fakeRequest)
             .done(function(data){
-              
               var cellsObject = {};
               cells.forEach(function(d){ d.selected = false; cellsObject[d.id] = d; })
               data.cells.forEach(function(d){
@@ -231,6 +231,21 @@ angular.module('citySensing.directives', [])
           map.showMap(scope.showMap)
           update();
         },true)
+
+        scope.$watch('coordinates',function(){
+          map.coordinates(scope.coordinates)
+          update();
+        },true) 
+
+        // scope.$watch('southWest',function(){
+        //   map.southWest(scope.southWest)
+        //   update();
+        // },true)  
+
+        // scope.$watch('northEst',function(){
+        //   map.northEst(scope.northEst)
+        //   update();
+        // },true)        
 
       }
     };

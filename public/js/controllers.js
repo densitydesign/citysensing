@@ -6,13 +6,20 @@ angular.module('citySensing.controllers', [])
   .controller('mainCtrl', function($scope, $http, gridService, apiService, $rootScope) {
 
     // base grid for the map
-    $scope.gridUrl = "grid/grid.json";
+    $scope.gridUrl = "grid/grid_milan.json";
     // default initial start value
     $scope.star = 1365469200000;
     // default initial end value
     $scope.end = 1366182000000;
 
     $scope.threshold = {"value" : 50};
+
+    //set map config
+    $scope.coordinates = [45.4640, 9.1916]; //map center
+    $scope.southWest = [45.2865, 8.9017]; //sw max bound coordinates
+    $scope.northEast = [45.6313, 9.4153]; //ne max bound coordinates
+    $scope.zoom = 13; //init zoom
+    $scope.tile = 'm'; //tile set
 
     $scope.colorList = [
       {
@@ -374,13 +381,20 @@ angular.module('citySensing.controllers', [])
   .controller('mfw', function($scope, $http, gridService, apiService, $rootScope) {
 
     // base grid for the map
-    $scope.gridUrl = "grid/grid.json";
+    $scope.gridUrl = "grid/grid_milan.json";
     // default initial start value
     $scope.star = 1377986400000;
     // default initial end value
     $scope.end = 1381442399000;
 
     $scope.threshold = {"value" : 50};
+
+    //set map config
+    $scope.coordinates = [45.4640, 9.1916]; //map center
+    $scope.southWest = [45.2865, 8.9017]; //sw max bound coordinates
+    $scope.northEast = [45.6313, 9.4153]; //ne max bound coordinates
+    $scope.zoom = 13; //init zoom
+    $scope.tile = 'm'; //tile set
 
     $scope.colorList = [
       {
@@ -750,6 +764,14 @@ angular.module('citySensing.controllers', [])
 
     $scope.threshold = {"value" : 50};
 
+    //set map config
+    $scope.coordinates = [43.8647, 10.6413]; //map center 
+    $scope.southWest = [43.8127, 10.4631]; //sw max bound coordinates
+    $scope.northEast = [43.9088, 10.8291]; //ne max bound coordinates
+    $scope.zoom = 12; //init zoom
+    $scope.tile = 'l'; //tile set
+
+
     $scope.colorList = [
       {
         label: "Social Sentiment",
@@ -846,7 +868,9 @@ angular.module('citySensing.controllers', [])
 
 
     $scope.areas = [
-      {name: "Lucca (all cells)", cells : []}
+      {name: "Lucca Comics (all cells)", cells : []},
+      {name: "Lucca", cells : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,25]},
+      {name: "Montecatini", cells : [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67]}
       ]
 
     // dismiss errors
