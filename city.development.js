@@ -47,7 +47,7 @@ var auth = express.basicAuth('citysensing', 'c1tysens1ng')
 
 // serve index and view partials
 app.get('/', auth, routes.index);
-app.get('/partials/:name', routes.partials);
+app.get('/partials/:name', auth, routes.partials);
 
 
 // JSON API
