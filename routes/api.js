@@ -2,7 +2,7 @@
 var request = require('request'),
 	//baseUrl = 'http://156.54.107.76:8003/0.4', //mdw
   baseUrl = 'http://156.54.107.76'
-  version = '0.4'
+  version = '0.5'
 	headers = { 'Content-type': 'application/json' };
 
 /*
