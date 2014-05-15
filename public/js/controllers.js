@@ -23,12 +23,12 @@ angular.module('citySensing.controllers', [])
 
     $scope.colorList = [
       {
-        label: "Social Sentiment",
-        value: "social_sentiment",
-      },
-      {
         label: "Social Activity",
         value: "social_activity"
+      },
+      {
+        label: "Social Sentiment",
+        value: "social_sentiment",
       },
       {
         label: "Mobile Activity",
@@ -97,7 +97,7 @@ angular.module('citySensing.controllers', [])
       $scope.request.anomalyColumnName = $scope.anomalyColumnName;
     }
 
-    $scope.exponent = $scope.anomalyExponent = 10;
+    $scope.exponent = $scope.anomalyExponent = 1;
 
     $scope.updateExponent = function(){
       if (!$scope.exponent || $scope.exponent == "") return;
@@ -398,12 +398,12 @@ angular.module('citySensing.controllers', [])
 
     $scope.colorList = [
       {
-        label: "Social Sentiment",
-        value: "social_sentiment",
-      },
-      {
         label: "Social Activity",
         value: "social_activity"
+      },
+      {
+        label: "Social Sentiment",
+        value: "social_sentiment",
       },
       {
         label: "Mobile Activity",
@@ -472,7 +472,7 @@ angular.module('citySensing.controllers', [])
       $scope.request.anomalyColumnName = $scope.anomalyColumnName;
     }
 
-    $scope.exponent = $scope.anomalyExponent = 10;
+    $scope.exponent = $scope.anomalyExponent = 1;
 
     $scope.updateExponent = function(){
       if (!$scope.exponent || $scope.exponent == "") return;
@@ -774,12 +774,12 @@ angular.module('citySensing.controllers', [])
 
     $scope.colorList = [
       {
-        label: "Social Sentiment",
-        value: "social_sentiment",
-      },
-      {
         label: "Social Activity",
         value: "social_activity"
+      },
+      {
+        label: "Social Sentiment",
+        value: "social_sentiment",
       },
       {
         label: "Mobile Activity",
@@ -848,7 +848,7 @@ angular.module('citySensing.controllers', [])
       $scope.request.anomalyColumnName = $scope.anomalyColumnName;
     }
 
-    $scope.exponent = $scope.anomalyExponent = 10;
+    $scope.exponent = $scope.anomalyExponent = 1;
 
     $scope.updateExponent = function(){
       if (!$scope.exponent || $scope.exponent == "") return;

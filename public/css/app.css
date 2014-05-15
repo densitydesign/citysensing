@@ -18,6 +18,11 @@ label, input, button, select, textarea {
   line-height: 22px;
 }
 
+.about {
+  text-align: center;
+  margin-top: 50px;
+}
+
 .small {
   font-size: 11px;
 }
