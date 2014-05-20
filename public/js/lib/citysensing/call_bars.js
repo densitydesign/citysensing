@@ -1,20 +1,37 @@
-var margin = {top: 20, right: 20, bottom: 40, left: 90},
-    width = 600 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+(function(){
 
-    var graph = d3.select("#viz")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
+  var citysensing = window.citysensing || (window.citysensing = {});
+
+  citysensing.callBars = function(){
+
+    var width = 900,
+      height = 100,
+      originValue = "national";
+
+    function vis(selection){
+      selection.each(function(data){
+
+      var margin = {top: 20, right: 0, bottom: 20, left: 50},
+          chartWidth = width - margin.left - margin.right,
+          chartHeight = height - margin.top - margin.bottom;
+
+      var chart;
+
+    if(selection.select(".groupChart").empty()){
+      chart = selection
+        .append("g")
+        .attr("class", "groupChart")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    }else{
 
-    var heightBar = height/2;
-    var originValue = "national";
-    //var originValue = "international";
-    var json;
+      chart = selection.select(".groupChart")
+    }
+
+
+    var heightBar = chartHeight/2;
 
     var x = d3.scale.ordinal()
-      .rangeBands([0, width], .2);
+      .rangeBands([0, chartWidth], .2);
 
     var y = d3.scale.linear()
       .range([heightBar, 0]);
@@ -26,6 +43,7 @@ var margin = {top: 20, right: 20, bottom: 40, left: 90},
     var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
+      .ticks(5)
       .tickFormat(function (d) {
           if ((d / 1000) >= 1) {
             d = d / 1000 + " K";
@@ -33,17 +51,14 @@ var margin = {top: 20, right: 20, bottom: 40, left: 90},
           return d;
         });
 
-    d3.json("call_data.json", function(json) {
-      data = json;
-
       if (originValue=="international") {
-        data = json.contactsChart.filter(function(e){ return e.location==="international"; })
+        data = data.filter(function(e){ return e.location==="international"; })
         var xDomain = d3.nest().key(function(d){return d.letterCode}).entries(data).map(function(d){ return  d.key })
         var yMax = d3.max(data, function(d){ return d.count})
         var dataOut = data.filter(function(e){ return e.type==="out"; })
         var dataIn = data.filter(function(e){ return e.type==="in"; })
       } else {
-        data = json.contactsChart.filter(function(e){ return e.location==="national"; })
+        data = data.filter(function(e){ return e.location==="national"; })
         var xDomain = d3.nest().key(function(d){return d.letterCode}).entries(data).map(function(d){ return  d.key })
         var yMax = d3.max(data, function(d){ return d.count})
         var dataOut = data.filter(function(e){ return e.type==="out"; })
@@ -51,57 +66,143 @@ var margin = {top: 20, right: 20, bottom: 40, left: 90},
       }
 
       x.domain(xDomain)
-      graph.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + heightBar + ")")
-        .call(xAxis);
+
+      if(chart.select(".x").empty()){
+        chart.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + heightBar + ")")
+          .call(xAxis);
+      }else{
+        chart.select(".x.axis")
+          .call(xAxis)
+      }
 
       //The In Bars
       y.domain([0,yMax])
-      graph.append("g")
-        .attr("class", "yIN axis")
-        .call(yAxis)
-      var bars = graph.append("g")
+
+      if(chart.select(".yIN").empty()){
+        chart.append("g")
+          .attr("class", "yIN axis")
+          .call(yAxis)
+      }else{
+        chart.select(".yIN.axis")
+          .call(yAxis)
+      }
+
+      var barsIn;
+      if(chart.select(".inBars").empty()){
+        barsIn = chart.append("g")
              .attr("class", "inBars")
-           .selectAll(".barIn")
-            .data(dataIn)
-          .enter().append("rect")
-            .attr("class", ".barIn")
+             .selectAll(".barIn")
+             .data(dataIn, function(d){return d.letterCode})
+      }else{
+        barsIn = chart.select(".inBars")
+                   .selectAll(".barIn")
+            .data(dataIn, function(d){return d.letterCode})
+      }
+
+
+          barsIn.transition().duration(200)
             .attr("x", function(d) { return x(d.letterCode); })
             .attr("y", function(d) { return y(d.count); })
             .attr("height", function(d) { return heightBar - y(d.count); })
             .attr("width", x.rangeBand())
-            .attr("fill", "#D35530")
+          
+          barsIn.enter().append("rect")
+            .attr("class", "barIn")
+            .attr("x", function(d) { return x(d.letterCode); })
+            .attr("y", function(d) { return y(d.count); })
+            .attr("height", function(d) { return heightBar - y(d.count); })
+            .attr("width", x.rangeBand())
+            .attr("fill", "#7CA49E")
             .attr("opacity", "1")
+
+           barsIn.exit().remove()
 
       //The Out Bars
       y.domain([yMax,0])
-      graph.append("g")
-        .attr("class", "yOUT axis")
-        .call(yAxis);
-      var bars = graph.append("g")
-            .attr("class", "outBars")
-          .selectAll(".barOut")
-            .data(dataOut)
-          .enter().append("rect")
-            .attr("class", ".barOut")
+
+       if(chart.select(".yOUT").empty()){
+          chart.append("g")
+            .attr("class", "yOUT axis")
+            .call(yAxis);
+      }else{
+        chart.select(".yOUT.axis")
+          .call(yAxis)
+      }
+
+      
+      var barsOut;
+      if(chart.select(".outBars").empty()){
+        barsOut = chart.append("g")
+             .attr("class", "outBars")
+             .selectAll(".barOut")
+             .data(dataOut, function(d){return d.letterCode})
+      }else{
+        barsOut = chart.select(".outBars")
+                   .selectAll(".barOut")
+            .data(dataOut, function(d){return d.letterCode})
+      }
+
+          barsOut.transition().duration(200)
+          .attr("x", function(d) { return x(d.letterCode); })
+          .attr("y", "0")
+          .attr("height", function(d) { return y(d.count); })
+          .attr("width", x.rangeBand())
+
+          barsOut.enter().append("rect")
+            .attr("class", "barOut")
             .attr("x", function(d) { return x(d.letterCode); })
             .attr("y", "0")
             .attr("height", function(d) { return y(d.count); })
             .attr("width", x.rangeBand())
-            .attr("fill", "#7CA49E")
+            .attr("fill", "#D35530")
             .attr("opacity", "1")
-      bars.attr("transform", "translate(0,"+ (heightBar + 24) +")");
+
+          barsOut.exit().remove()
+
+      barsOut.attr("transform", "translate(0,"+ (heightBar + 24) +")");
+
       d3.select(".yOUT").attr("transform", "translate(0,"+ (heightBar + 24) +")");
 
       //Styling stuff
-      d3.selectAll(".axis > g > text")
+      chart.selectAll(".axis > g > text")
         .style("fill","#888")
         .style("font-size","10px")
         .style("font-family","Open Sans, Arial, sans-serif");      
-      d3.selectAll(".axis > .domain")
+      
+      chart.selectAll(".axis > .domain")
         .style("fill", "none")
         .style("stroke","#888")
         .style("stroke-width","0")
         .style("shape-rendering","crispEdges")
-    });
+ 
+
+      });
+    }
+    
+    vis.width = function(_width){
+      if (!arguments.length) return width;
+      width = _width;
+      return vis;
+    }
+
+    vis.height = function(_height){
+      if (!arguments.length) return height;
+      height = _height;
+      return vis;
+    }
+
+    vis.originValue = function(_originValue){
+      if (!arguments.length) return originValue;
+      originValue = _originValue;
+      return vis;
+    }
+
+    //d3.rebind(vis, dispatch, 'on');
+
+    return vis;
+
+  }
+
+})();

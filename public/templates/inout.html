@@ -3,6 +3,7 @@
     <button type="button" class="btn" ng-model="searchContact.location" btn-radio="'national'">National</button>
     <button type="button" class="btn" ng-model="searchContact.location" btn-radio="'international'">International</button>
 </div>
+<div id="callBars" ng-show="inout"></div>
 <p ng-show="!inout.length">Sorry, no calls data found for the current selection.</p>
 
 <table class="table table-striped" ng-show="inout">

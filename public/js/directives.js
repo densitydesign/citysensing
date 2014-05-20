@@ -578,7 +578,7 @@ angular.module('citySensing.directives', [])
       replace: false,
       link: function postLink(scope, element, attrs) {
 
-      	var steps = [],
+        var steps = [],
             scales = {},
             interval;
 
@@ -714,6 +714,18 @@ angular.module('citySensing.directives', [])
       templateUrl: '../templates/inout.html',
       link: function postLink(scope, element, attrs) {
 
+        var container = element.find("#callBars");
+
+        var svg = d3.select(container[0])
+          .append("svg")
+          .attr("width", $(".tab-content").width())
+          .attr("height", 200)
+
+
+        var callBars = citysensing.callBars()
+                        .width($(".tab-content").width())
+                        .height(200)
+
         function update(){
           if(scope.request.cells.length){
             apiService.getInOut(scope.request)
@@ -722,13 +734,16 @@ angular.module('citySensing.directives', [])
                 var callsList = data['contactsChart']
                 callsList.forEach(function(f){
                   f.count = Math.round(f.count)
-                  if(f.location == 'international'){
-                  f.countryCode = scope.toCountryName(f.countryCode)
-                  }
+                  f.name = scope.toCountryName(f.countryCode)
+                  f.letterCode = scope.toCountryName(f.countryCode)
+
                 })
 
                 scope.inout = callsList;
                 scope.$apply();
+
+                console.log(scope.searchContact.location)
+                svg.datum(scope.inout).call(callBars)
               })
               .fail(function(error){
                 scope.error = error;
@@ -742,6 +757,13 @@ angular.module('citySensing.directives', [])
         scope.$watch('request', function(){
               update()
         },true)
+
+        scope.$watch('searchContact.location', function(newValue,oldValue){
+              
+              if(newValue != oldValue){
+                svg.call(callBars.originValue(newValue))
+              }
+        })
 
       }
     };
