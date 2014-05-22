@@ -5,8 +5,11 @@
   citysensing.callBars = function(){
 
     var width = 900,
-      height = 100,
+      height = 270,
       originValue = "national";
+
+    d3.select("#callBars > svg")
+      .attr("height", height)
 
     function vis(selection){
       selection.each(function(data){
@@ -18,10 +21,52 @@
       var chart;
 
     if(selection.select(".groupChart").empty()){
+
       chart = selection
         .append("g")
         .attr("class", "groupChart")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      var legenda = selection.append("g")
+        .attr("class", "legend")
+        
+      legenda.append("rect")
+        .attr("x", 65)
+        .attr("y", 220)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("fill", "#7CA49E");
+      legenda.append("text")
+          .attr("x", 80)
+          .attr("y", 230)
+          .attr("height", 10)
+          .attr("width", 10)
+          .attr("fill", "#7CA49E")
+          .attr("fill", "#888")
+          .text("Incoming Calls")
+          .attr("font-size", 10)
+          .attr("font-family", "Open Sans, Arial, sans-serif")
+          .attr("font-weight", 600);
+
+      legenda.append("rect")
+        .attr("x", 65)
+        .attr("y", 245)
+        .attr("height", 10)
+        .attr("width", 10)
+        .attr("fill", "#D35530");
+      legenda.append("text")
+          .attr("x", 80)
+          .attr("y", 255)
+          .attr("height", 10)
+          .attr("width", 10)
+          .attr("fill", "#D35530")
+          .attr("fill", "#888")
+          .text("Outgoing Calls")
+          .attr("font-size", 10)
+          .attr("font-family", "Open Sans, Arial, sans-serif")
+          .attr("font-weight", 600)
+      
+
     }else{
 
       chart = selection.select(".groupChart")
@@ -34,7 +79,7 @@
       .rangeBands([0, chartWidth], .2);
 
     var y = d3.scale.log()
-      .range([heightBar, 1]);
+      .range([heightBar, 1])
     
     var xAxis = d3.svg.axis()
       .scale(x)

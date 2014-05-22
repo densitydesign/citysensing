@@ -513,3 +513,13 @@ table {
 #inoutSearch > .active {
   border-color: #dcdcdc;
 }
+
+#callBars .x .tick line {
+  stroke-width: 0;
+}
+
+/*Telephone calls barchart*/
+
+#callBars .axis .tick text {
+  font-weight: 600;
+}
