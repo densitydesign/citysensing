@@ -101,6 +101,8 @@ div.row-fluid
 						a(href="#flows", data-toggle="tab") Flows
 					li
 						a(href="#inout", data-toggle="tab") In Out
+					li
+						a(href="#profiles", data-toggle="tab") Profiles
 
 		div#eventlist.row-fluid
 			div.span12.breath.tab-content
@@ -123,7 +125,9 @@ div.row-fluid
 						div.span6(flows-two)
 				div.row-fluid.tab-pane(id="inout")
 					div.span12(inout)
-
+				div.row-fluid.tab-pane(id="profiles")
+					div.span12
+						div(profiles)
 script.
 	$('#myTab a').click(function (e) {
 		e.preventDefault();

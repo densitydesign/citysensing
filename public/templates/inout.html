@@ -1,5 +1,5 @@
 <div class="input-append" id="inoutSearch" >
-	<input type="text" ng-model="searchContact.countryCode" placeholder="Search City or Country"></input>
+	<input type="text" ng-model="searchContact.name" placeholder="Search City or Country"></input>
     <button type="button" class="btn" ng-model="searchContact.location" btn-radio="'national'">National</button>
     <button type="button" class="btn" ng-model="searchContact.location" btn-radio="'international'">International</button>
 </div>
@@ -17,7 +17,7 @@
 	</thead>
 	<tbody>
 		<tr ng-repeat="contact in inout | filter:searchContact:inoutComparator">
-			<td>{{contact.countryCode }}</td>
+			<td>{{contact.name }}</td>
 			<td style="text-align:center">{{contact.count}}</td>
 			<td>{{contact.type }}</td>
 			<td>{{contact.location }}</td>

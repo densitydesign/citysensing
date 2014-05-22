@@ -11,7 +11,7 @@
     function vis(selection){
       selection.each(function(data){
 
-      var margin = {top: 20, right: 0, bottom: 20, left: 50},
+      var margin = {top: 20, right: 0, bottom: 30, left: 50},
           chartWidth = width - margin.left - margin.right,
           chartHeight = height - margin.top - margin.bottom;
 
@@ -33,34 +33,39 @@
     var x = d3.scale.ordinal()
       .rangeBands([0, chartWidth], .2);
 
-    var y = d3.scale.linear()
-      .range([heightBar, 0]);
+    var y = d3.scale.log()
+      .range([heightBar, 1]);
     
     var xAxis = d3.svg.axis()
       .scale(x)
       .orient("bottom")
 
+    var numberFormat = d3.format("s");
+    function logFormat(d) {
+      var x = Math.log(d) / Math.log(10) + 1e-6;
+      return Math.abs(x - Math.floor(x)) < .4 ? numberFormat(d) : "";
+    }
+    function axisFormat(d) {
+      var x = Math.log(d) / Math.log(10) + 1e-6;
+      return Math.abs(x - Math.floor(x)) < .4 ? -chartWidth : 1;
+    }
     var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
-      .ticks(5)
-      .tickFormat(function (d) {
-          if ((d / 1000) >= 1) {
-            d = d / 1000 + " K";
-          }
-          return d;
-        });
+      .tickFormat(logFormat)
 
       if (originValue=="international") {
         data = data.filter(function(e){ return e.location==="international"; })
         var xDomain = d3.nest().key(function(d){return d.letterCode}).entries(data).map(function(d){ return  d.key })
         var yMax = d3.max(data, function(d){ return d.count})
+        var yMin = d3.min(data, function(d){ return d.count})
         var dataOut = data.filter(function(e){ return e.type==="out"; })
         var dataIn = data.filter(function(e){ return e.type==="in"; })
       } else {
         data = data.filter(function(e){ return e.location==="national"; })
         var xDomain = d3.nest().key(function(d){return d.letterCode}).entries(data).map(function(d){ return  d.key })
         var yMax = d3.max(data, function(d){ return d.count})
+        var yMin = d3.min(data, function(d){ return d.count})
         var dataOut = data.filter(function(e){ return e.type==="out"; })
         var dataIn = data.filter(function(e){ return e.type==="in"; })
       }
@@ -78,7 +83,7 @@
       }
 
       //The In Bars
-      y.domain([0,yMax])
+      y.domain([yMin,yMax])
 
       if(chart.select(".yIN").empty()){
         chart.append("g")
@@ -120,7 +125,7 @@
            barsIn.exit().remove()
 
       //The Out Bars
-      y.domain([yMax,0])
+      y.domain([yMax,yMin])
 
        if(chart.select(".yOUT").empty()){
           chart.append("g")

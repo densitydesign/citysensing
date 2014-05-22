@@ -707,7 +707,7 @@ angular.module('citySensing.directives', [])
     };
   }])
 
-  .directive('inout', [ 'apiService', function (apiService) {
+  .directive('inout', [ 'apiService', 'toCountryNameFilter', function (apiService, toCountryName) {
     return {
       restrict: 'A',
       replace: false,
@@ -734,15 +734,16 @@ angular.module('citySensing.directives', [])
                 var callsList = data['contactsChart']
                 callsList.forEach(function(f){
                   f.count = Math.round(f.count)
-                  f.name = scope.toCountryName(f.countryCode)
-                  f.letterCode = scope.toCountryName(f.countryCode)
+                  //f.name = scope.toCountryName(f.countryCode)
+                  //f.letterCode = scope.toCountryName(f.countryCode)
+                  f.name = toCountryName(f.countryCode, "name")
+                  f.letterCode = toCountryName(f.countryCode, "letterCode")
 
                 })
 
                 scope.inout = callsList;
                 scope.$apply();
 
-                console.log(scope.searchContact.location)
                 svg.datum(scope.inout).call(callBars)
               })
               .fail(function(error){
@@ -866,4 +867,17 @@ angular.module('citySensing.directives', [])
         })
       }
     };
-  }]);
+  }])
+ .directive('profiles', [ '$rootScope', function ($rootScope) {
+    return {
+      restrict: 'A',
+      replace: false,
+      link: function postLink(scope, element, attrs) {
+
+        d3.select(element[0])
+          .append("object")
+          .attr("type", "image/svg+xml")
+          .attr("data", "/img/profiles.svg")
+      }
+    };
+  }])
