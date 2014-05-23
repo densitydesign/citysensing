@@ -97,7 +97,7 @@ angular.module('citySensing.controllers', [])
       $scope.request.anomalyColumnName = $scope.anomalyColumnName;
     }
 
-    $scope.exponent = $scope.anomalyExponent = 1;
+    $scope.exponent = $scope.anomalyExponent = 9;
 
     $scope.updateExponent = function(){
       if (!$scope.exponent || $scope.exponent == "") return;
@@ -1703,7 +1703,7 @@ angular.module('citySensing.controllers', [])
       $scope.request.anomalyColumnName = $scope.anomalyColumnName;
     }
 
-    $scope.exponent = $scope.anomalyExponent = 1;
+    $scope.exponent = $scope.anomalyExponent = 9;
 
     $scope.updateExponent = function(){
       if (!$scope.exponent || $scope.exponent == "") return;
@@ -2079,7 +2079,7 @@ angular.module('citySensing.controllers', [])
       $scope.request.anomalyColumnName = $scope.anomalyColumnName;
     }
 
-    $scope.exponent = $scope.anomalyExponent = 1;
+    $scope.exponent = $scope.anomalyExponent = 9;
 
     $scope.updateExponent = function(){
       if (!$scope.exponent || $scope.exponent == "") return;
