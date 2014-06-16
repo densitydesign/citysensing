@@ -39,7 +39,7 @@ if (app.get('env') === 'production') {
 
 
 // Authenticator
-var auth = express.basicAuth('citysensing', 's3ns1ngc1ty')
+var auth = express.basicAuth('citysensing', 'c1tysens1ng')
 
 /**
  * Routes
